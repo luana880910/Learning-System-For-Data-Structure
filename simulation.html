@@ -1,0 +1,404 @@
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>?:</title>
+	<style>
+		#Pos {
+			margin-left: 40;
+			float: left;
+		}
+	</style>
+</head>
+<script>
+
+    var second = 0;
+    var stayTime,beforeTime;
+    function timeCount() {
+        beforeTime =  localStorage.getItem("stayTime");
+        stayTime = setInterval(function () {
+            second++;
+            localStorage.setItem("stayTime",beforeTime+"@學習系統-? : 停留時間："+second+"\n");
+        }, 1000);
+    }
+
+</script>
+<body onload='timeCount();'>
+	<div id="Pos">
+		原始成績：
+		<button type="button" id="random" onclick="Random()">亂數產生</button> <br><br>
+		<table style="border:solid thin;">
+			<tr>
+				<td>學生</td>
+				<td>第1位</td>
+				<td>第2位</td>
+				<td>第3位</td>
+				<td>第4位</td>
+				<td>第5位</td>
+				<td>第6位</td>
+				<td>第7位</td>
+				<td>第8位</td>
+				<td>第9位</td>
+				<td>第10位</td>
+			</tr>
+			<tr>
+				<td>成績</td>
+				<td><input style="width:45px" type="number" id="input0"></td>
+				<td><input style="width:45px" type="number" id="input1"></td>
+				<td><input style="width:45px" type="number" id="input2"></td>
+				<td><input style="width:45px" type="number" id="input3"></td>
+				<td><input style="width:45px" type="number" id="input4"></td>
+				<td><input style="width:45px" type="number" id="input5"></td>
+				<td><input style="width:45px" type="number" id="input6"></td>
+				<td><input style="width:45px" type="number" id="input7"></td>
+				<td><input style="width:45px" type="number" id="input8"></td>
+				<td><input style="width:45px" type="number" id="input9"></td>
+			</tr>
+		</table>
+		模式：
+		<input type="radio" id="mode1" name="mode" onclick="mode = 1;"> Animation
+		<input type="radio" id="mode2" name="mode" onclick="mode = 2;"> Step
+		<input type="radio" id="mode3" name="mode" onclick="mode = 3;"> Run-all
+		<br>
+		速度：
+		<input type="radio" id="speed1" name="speed" onclick="speed = 1;"> 快
+		<input type="radio" id="speed2" name="speed" onclick="speed = 2;"> 中
+		<input type="radio" id="speed3" name="speed" onclick="speed = 3;"> 慢
+		<br>
+		<button id="start" onclick="start()"> 開始處理 </button>
+		<button id="next" onclick="next()" disabled='true'> 下一步 </button>
+		<button id="clear" onclick="restart()"> 清除所有欄位 </button>
+		<br>
+		<div id="Pos">
+			<canvas id="showCode" width="400" height="160">
+				This text is displayed if your browser does not support HTML5 Canvas.
+			</canvas>
+		</div>
+		<canvas id="showChart" width="500" height="400">
+			This text is displayed if your browser does not support HTML5 Canvas.
+		</canvas>
+		<br>
+		目前步驟：
+		<br>
+		<textarea cols="100" rows="3" readonly="readonly" id="process1"></textarea><br>
+		所有過程：
+		<br>
+		<textarea cols="100" rows="10" readonly="readonly" id="process2"></textarea><br>
+	</div>
+</body>
+<script>
+	var interval;
+	var mode = speed = 0;
+	var delay = 1000;
+	var allStep = [];
+	var A = [];
+	var B = [];
+	var C = [];
+	var max = 0;
+	var count = allCount = animeCount = nextCount =  0;
+	var canvas = document.getElementById('showCode');
+	var code = canvas.getContext("2d");
+	var showFlowChart = document.getElementById("showChart");
+	var drawFlowChart = showFlowChart.getContext("2d");
+
+	var A0 = document.getElementById("input0");
+	var A1 = document.getElementById("input1");
+	var A2 = document.getElementById("input2");
+	var A3 = document.getElementById("input3");
+	var A4 = document.getElementById("input4");
+	var A5 = document.getElementById("input5");
+	var A6 = document.getElementById("input6");
+	var A7 = document.getElementById("input7");
+	var A8 = document.getElementById("input8");
+	var A9 = document.getElementById("input9");
+
+	function clear() {
+		allStep = [];
+		A = [];
+		var B = [];
+		count  = nextCount = allCount = animeCount= 0;
+
+		process1.value = "";
+		process2.value = "";
+
+		clearInterval(interval);
+
+		code.clearRect(0, 0, 400, 350);
+		drawFlowChart.clearRect(0, 0, 820, 400);
+	}
+
+	function readTable() {
+		A[0] = parseInt(A0.value);
+		A[1] = parseInt(A1.value);
+		A[2] = parseInt(A2.value);
+		A[3] = parseInt(A3.value);
+		A[4] = parseInt(A4.value);
+		A[5] = parseInt(A5.value);
+		A[6] = parseInt(A6.value);
+		A[7] = parseInt(A7.value);
+		A[8] = parseInt(A8.value);
+		A[9] = parseInt(A9.value);
+	}
+
+	function Random() {
+		A0.value = Math.floor(Math.random() * 100);
+		A1.value = Math.floor(Math.random() * 100);
+		A2.value = Math.floor(Math.random() * 100);
+		A3.value = Math.floor(Math.random() * 100);
+		A4.value = Math.floor(Math.random() * 100);
+		A5.value = Math.floor(Math.random() * 100);
+		A6.value = Math.floor(Math.random() * 100);
+		A7.value = Math.floor(Math.random() * 100);
+		A8.value = Math.floor(Math.random() * 100);
+		A9.value = Math.floor(Math.random() * 100);
+	}
+
+	function cal() {
+		readTable();
+		var max = A[count];
+		allStep[count] = "第" + [count + 1] + "位同學大於max，現在max為" + A[count] + "\n";
+		C[count] = max;
+		B[count] = 1;
+		count++;
+		for (var i = 1; i < 10; i++, count++) {
+			if (A[i] > max) {
+				max = A[i];
+				allStep[count] = "第" + [i + 1] + "位同學大於max，現在max為" + A[i] + "\n";
+				B[i] = 1;
+				C[i] = max;
+			} else {
+				allStep[count] = "第" + [i + 1] + "位同學不大於max，現在max不變\n";
+				B[i] = 0;
+				C[i] = max;
+			}
+		}
+		allStep[count] = "輸出max : " + max;
+		C[i] = max;
+		return max;
+	}
+
+	function start() {
+
+		if (A0.value == "" || A1.value == "" || A2.value == "" || A3.value == "" || A4.value == "" || A5.value == "" || A6
+			.value == "" || A7.value == "" || A8.value == "" || A9.value == "") {
+			alert("請輸入陣列內容");
+			return;
+		} else if (mode == 1) {
+			if (speed == 1)
+				delay = 1000;
+			else if (speed == 2)
+				delay = 2000;
+			else if (speed == 3)
+				delay = 3000;
+			else {
+				alert("請選擇速度");
+				return;
+			}
+		} else if (mode == 2) {
+			document.getElementById('next').disabled = false;
+			document.getElementById('start').disabled = true;
+		} else if (mode == 3)
+			document.getElementById('start').disabled = true;
+		else {
+			alert("請選擇顯示模式");
+			return;
+		}
+		document.getElementById('random').disabled = true;
+		document.getElementById('mode1').disabled = true;
+		document.getElementById('mode2').disabled = true;
+		document.getElementById('mode3').disabled = true;
+		document.getElementById('speed1').disabled = true;
+		document.getElementById('speed2').disabled = true;
+		document.getElementById('speed3').disabled = true;
+		clear();
+		drawCode();
+		drawChart();
+		max = cal();
+		if (mode == 1)
+			interval = setInterval(anime, delay);
+		else if (mode == 3) {
+			while (allCount < allStep.length) {
+				process1.value = allStep[allCount];
+				process2.value += allStep[allCount];
+				fillCode(allCount);
+				fillChart(allCount);
+				allCount++;
+			}
+		}
+	}
+
+	function next() {
+		if (nextCount <= allStep.length) {
+			process1.value = allStep[nextCount];
+			process2.value += allStep[nextCount];
+			fillCode(nextCount);
+			fillChart(nextCount);
+		}
+		nextCount++;
+		if (nextCount == allStep.length) {
+			document.getElementById('next').disabled = true;
+		}
+	}
+
+	function anime() {
+		if (animeCount < allStep.length) {
+			process1.value = allStep[animeCount];
+			process2.value += allStep[animeCount];
+			fillCode(animeCount);
+			fillChart(animeCount);
+		}
+		animeCount++;
+		if (animeCount == allStep.length)
+			clearInterval(interval);
+	}
+
+	function restart() {
+		clearInterval(interval);
+		document.getElementById('start').checked = false;
+		document.getElementById('mode1').checked = false;
+		document.getElementById('mode2').checked = false;
+		document.getElementById('mode3').checked = false;
+		document.getElementById('speed1').checked = false;
+		document.getElementById('speed2').checked = false;
+		document.getElementById('speed3').checked = false;
+		document.getElementById('start').disabled = false;
+		document.getElementById('next').disabled = true;
+		document.getElementById('random').disabled = false;
+		document.getElementById('mode1').disabled = false;
+		document.getElementById('mode2').disabled = false;
+		document.getElementById('mode3').disabled = false;
+		document.getElementById('speed1').disabled = false;
+		document.getElementById('speed2').disabled = false;
+		document.getElementById('speed3').disabled = false;
+
+		A0.value = "";
+		A1.value = "";
+		A2.value = "";
+		A3.value = "";
+		A4.value = "";
+		A5.value = "";
+		A6.value = "";
+		A7.value = "";
+		A8.value = "";
+		A9.value = "";
+
+		mode = speed = 0;
+		delay = 1000;
+
+		clear();
+	}
+
+	function drawCode() {
+		code.fillStyle = "black";
+		code.font = "18px Verdana";
+		code.fillText("int max = 0;", 30, 20);
+		code.fillText("for(i=0;i<10;i++)", 30, 40);
+		code.fillText("{", 30, 60);
+		code.fillText("max = (A[i] > max)?A[i]:max;", 60, 80);
+		code.fillText("}", 30, 100);
+		code.fillText("System.out.println(max);", 30, 120);
+	}
+
+	function drawChart() {
+		drawFlowChart.fillStyle = "black";
+		var circle = new Path2D();
+		circle.moveTo(300, 80);
+		circle.arc(250, 80, 50, 0, 2 * Math.PI);
+		drawFlowChart.stroke(circle);
+		drawFlowChart.font = '30px serif'; //畫第一個圓圈
+
+		drawFlowChart.beginPath();
+		drawFlowChart.moveTo(248, 130);
+		drawFlowChart.lineTo(252, 130);
+		drawFlowChart.lineTo(252, 180);
+		drawFlowChart.lineTo(256, 180);
+		drawFlowChart.lineTo(250, 186);
+		drawFlowChart.lineTo(244, 180);
+		drawFlowChart.lineTo(248, 180);
+		drawFlowChart.fill(); //畫第一個箭頭
+
+		drawFlowChart.beginPath();
+		drawFlowChart.moveTo(250, 186);
+		drawFlowChart.lineTo(350, 221);
+		drawFlowChart.lineTo(250, 256);
+		drawFlowChart.lineTo(150, 221);
+		drawFlowChart.lineTo(250, 186);
+		drawFlowChart.stroke(); //畫第一個菱形
+
+		drawFlowChart.beginPath();
+		drawFlowChart.moveTo(150, 219);
+		drawFlowChart.lineTo(150, 223);
+		drawFlowChart.lineTo(120, 223);
+		drawFlowChart.lineTo(120, 288);
+		drawFlowChart.lineTo(124, 288);
+		drawFlowChart.lineTo(118, 294);
+		drawFlowChart.lineTo(112, 288);
+		drawFlowChart.lineTo(116, 288);
+		drawFlowChart.lineTo(116, 219);
+		drawFlowChart.fill(); //畫第二個箭頭
+
+		drawFlowChart.beginPath();
+		drawFlowChart.moveTo(350, 219);
+		drawFlowChart.lineTo(350, 223);
+		drawFlowChart.lineTo(380, 223);
+		drawFlowChart.lineTo(380, 288);
+		drawFlowChart.lineTo(376, 288);
+		drawFlowChart.lineTo(382, 294);
+		drawFlowChart.lineTo(388, 288);
+		drawFlowChart.lineTo(384, 288);
+		drawFlowChart.lineTo(384, 219);
+		drawFlowChart.fill(); //畫第三個箭頭
+
+		drawFlowChart.rect(43, 294, 150, 50);
+		drawFlowChart.stroke(); //畫"是"的矩形
+
+		drawFlowChart.rect(307, 294, 155, 50);
+		drawFlowChart.stroke(); //畫"否"的矩形
+
+		drawFlowChart.font = '30px serif';
+		drawFlowChart.fillText('開始', 220, 90);
+		drawFlowChart.fillText('條件', 220, 230);
+		drawFlowChart.fillStyle = "green";
+		drawFlowChart.fillText('是', 110, 210);
+		drawFlowChart.fillStyle = "red";
+		drawFlowChart.fillText('否', 365, 210);
+		drawFlowChart.fillStyle = "black";
+		drawFlowChart.fillText('max = A[i]', 55, 328);
+		drawFlowChart.fillText('max不變', 327, 328); //填上文字
+	}
+
+	function fillCode(i) {
+		code.globalCompositeOperation = "destination-over";
+		code.fillStyle = "khaki";
+		if (i < 10) {
+			code.fillRect(0, 64, 400, 20);
+			code.fillStyle = "black";
+		} else {
+			code.fillRect(0, 105, 400, 20);
+			code.clearRect(0, 64, 400, 20);
+			code.fillStyle = "black";
+			code.fillText("max = (A[i] > max)?A[i]:max;", 60, 80);
+		}
+	}
+
+	function fillChart(i) {
+		drawFlowChart.globalCompositeOperation = "destination-over";
+		drawFlowChart.fillStyle = "khaki";
+		if (B[i] == 1) {
+			drawFlowChart.clearRect(307, 294, 155, 50);
+			drawFlowChart.fillStyle = "black";
+			drawFlowChart.fillText('max不變', 327, 328);
+			drawFlowChart.clearRect(43, 294, 150, 50);
+			drawFlowChart.fillText('max = ' + C[i], 55, 328);
+			drawFlowChart.fillStyle = "khaki";
+			drawFlowChart.fillRect(43, 294, 150, 50);
+		} else {
+			drawFlowChart.fillRect(307, 294, 155, 50);
+			drawFlowChart.clearRect(43, 294, 150, 50);
+			drawFlowChart.fillStyle = "black";
+			drawFlowChart.fillText('max = ' + C[i], 55, 328);
+		}
+	}
+</script>
+
+</html>

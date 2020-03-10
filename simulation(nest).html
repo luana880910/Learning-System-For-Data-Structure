@@ -1,0 +1,455 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>nested</title>
+    <style>
+        #Pos {
+            margin-top: 40;
+            margin-left: 40;
+            float: left;
+        }
+
+        #showCode {
+            float: left;
+        }
+
+        #showImage {
+            float: right;
+        }
+    </style>
+</head>
+<script>
+
+    var second = 0;
+    var stayTime,beforeTime;
+    function timeCount() {
+        beforeTime =  localStorage.getItem("stayTime");
+        stayTime = setInterval(function () {
+            second++;
+            localStorage.setItem("stayTime",beforeTime+"@學習系統-巢狀迴圈 停留時間："+second+"\n");
+        }, 1000);
+    }
+
+</script>
+<body onload='timeCount();'>
+    <div id="Pos">
+        <font size=4>請輸入金字塔大小 (介於1到10): </font>
+        <input style="height:30;width: 60;" type="number" id="input">
+        <button type="button" id="random" onclick="random()"> 亂數產生 </button>
+        <br><br>
+        模式：
+        <input type="radio" id="mode1" name="mode" onclick="mode = 1;"> Animation
+        <input type="radio" id="mode2" name="mode" onclick="mode = 2;"> Step
+        <input type="radio" id="mode3" name="mode" onclick="mode = 3;"> Run-all
+        <br>
+        速度：
+        <input type="radio" id="speed1" name="speed" onclick="speed = 1;"> 快
+        <input type="radio" id="speed2" name="speed" onclick="speed = 2;"> 中
+        <input type="radio" id="speed3" name="speed" onclick="speed = 3;"> 慢
+        <br>
+        <button id="start" onclick="start()"> 開始處理 </button>
+        <button id="next" onclick="next()" disabled='true'> 下一步 </button>
+        <button id="clear" onclick="restart()"> 清除所有欄位 </button>
+        <br><br>
+        <canvas id="showCode" width="400" height="200">
+            This text is displayed if your browser does not support HTML5 Canvas.
+        </canvas>
+        <canvas id="showChart" width="530" height="570">
+            This text is displayed if your browser does not support HTML5 Canvas.
+        </canvas>
+        <canvas id="showImage" width="500" height="280">
+            This text is displayed if your browser does not support HTML5 Canvas.
+        </canvas>
+        <div id="step">
+            目前步驟：
+            <br>
+            <textarea cols="100" rows="3" readonly="readonly" id="process1"></textarea><br>
+            所有過程：
+            <br>
+            <textarea cols="100" rows="10" readonly="readonly" id="process2"></textarea><br>
+        </div>
+    </div>
+</body>
+<script>
+    var interval;
+    var mode = speed = count = level = 0;
+    var A = document.getElementById("input");
+    var allStep = [];
+    var B = [];
+    var drawImage = document.getElementById("showImage").getContext("2d");
+    var drawChart = document.getElementById("showChart").getContext("2d");
+    var drawCode = document.getElementById("showCode").getContext("2d");
+
+    function clear() {
+        allStep = [];
+        count = 0;
+
+        process1.value = process2.value = "";
+
+        clearInterval(interval);
+        drawCode.clearRect(0, 0, 400, 200);
+        drawChart.clearRect(0, 0, 530, 570);
+        drawImage.clearRect(0, 0, 500, 280);
+    }
+
+    function random() {
+        A.value = Math.floor(Math.random() * 10 + 1);
+    }
+
+    function cal() {
+        for (var i = 0; i < level; i++) {
+            allStep[3 * i] = "第" + [i + 1] + "列印出" + [level - i] + "個空白\n";
+            B[3 * i] = 1;
+            allStep[3 * i + 1] = "第" + [i + 1] + "列印出" + [2 * i + 1] + "個星號，換行繼續印\n";
+            B[3 * i + 1] = 2;
+            if (i == level - 1) {
+                B[3 * i + 2] = 4;
+                allStep[3 * i + 2] = "以達到指定列數，跳出迴圈\n";
+            }
+            else {
+                B[3 * i + 2] = 3;
+                allStep[3 * i + 2] = "還未印到指定列數，繼續迴圈\n";
+            }
+        }
+    }
+
+    function start() {
+        if (A.value == "") {
+            alert("請輸入金字塔大小");
+            return;
+        }
+        else if (A.value > 10 || A.value < 1) {
+            alert("金字塔大小必須在1到10之間");
+            return;
+        }
+        else if (mode == 1) {
+            if (speed == 1)
+                delay = 1000;
+            else if (speed == 2)
+                delay = 2000;
+            else if (speed == 3)
+                delay = 3000;
+            else {
+                alert("請選擇速度");
+                return;
+            }
+        }
+        else if (mode == 2) {
+            document.getElementById('next').disabled = false;
+            document.getElementById('start').disabled = true;
+        }
+        else if (mode == 3)
+            document.getElementById('start').disabled = true;
+        else {
+            alert("請選擇顯示模式");
+            return;
+        }
+        document.getElementById('random').disabled = true;
+        document.getElementById('mode1').disabled = true;
+        document.getElementById('mode2').disabled = true;
+        document.getElementById('mode3').disabled = true;
+        document.getElementById('speed1').disabled = true;
+        document.getElementById('speed2').disabled = true;
+        document.getElementById('speed3').disabled = true;
+        levelC = level = parseInt(A.value);
+
+        clear();
+        draw1();
+        draw2();
+        cal();
+
+        if (mode == 1)
+            interval = setInterval(anime, delay);
+        else if (mode == 3) {
+            while (count < allStep.length) {
+                process1.value = allStep[count];
+                process2.value += allStep[count];
+                fillCode(count);
+                fillChart(count);
+                draw3(count);
+                count++;
+            }
+        }
+    }
+
+    function next() {
+        if (count < allStep.length) {
+            process1.value = allStep[count];
+            process2.value += allStep[count];
+            fillCode(count);
+            fillChart(count);
+            draw3(count);
+        }
+        count++;
+        if (count == allStep.length) {
+            document.getElementById('next').disabled = true;
+        }
+    }
+
+    function anime() {
+        if (count < allStep.length) {
+            process1.value = allStep[count];
+            process2.value += allStep[count];
+            fillCode(count);
+            fillChart(count);
+            draw3(count);
+        }
+        count++;
+        if (count == allStep.length)
+            clearInterval(interval);
+    }
+
+    function restart() {
+        clearInterval(interval);
+        document.getElementById('start').checked = false;
+        document.getElementById('mode1').checked = false;
+        document.getElementById('mode2').checked = false;
+        document.getElementById('mode3').checked = false;
+        document.getElementById('speed1').checked = false;
+        document.getElementById('speed2').checked = false;
+        document.getElementById('speed3').checked = false;
+        document.getElementById('start').disabled = false;
+        document.getElementById('next').disabled = true;
+        document.getElementById('random').disabled = false;
+        document.getElementById('mode1').disabled = false;
+        document.getElementById('mode2').disabled = false;
+        document.getElementById('mode3').disabled = false;
+        document.getElementById('speed1').disabled = false;
+        document.getElementById('speed2').disabled = false;
+        document.getElementById('speed3').disabled = false;
+
+        A.value = "";
+        mode = speed = level = 0;
+        delay = 1000;
+
+        clear();
+    }
+
+    function draw1() {
+        drawCode.fillStyle = "black";
+        drawCode.font = "18px Verdana";
+        drawCode.fillText("int level = " + level + ";", 50, 20);
+        drawCode.fillText("for (int i = 0; i < " + level + "; i++) {", 50, 40);
+        drawCode.fillText("for (int j = 0; j <= 7 - 1 - i; j++)", 80, 60);
+        drawCode.fillText('System.out.print(" ");', 110, 80);
+        drawCode.fillText("for (int k = 0; k <= 2 * i; k++)", 80, 100);
+        drawCode.fillText('System.out.print("*");', 110, 120);
+        drawCode.fillText('System.out.println("");', 80, 140);
+        drawCode.fillText("}", 50, 160);
+        drawCode.fillStyle = "green";
+        drawCode.fillText("//結束迴圈", 50, 180);
+    }
+
+    function draw2() {
+        drawChart.font = '30px serif';
+        drawChart.fillStyle = "black";
+
+        drawChart.beginPath();
+        drawChart.moveTo(250, 30);
+        drawChart.lineTo(350, 80);
+        drawChart.lineTo(250, 130);
+        drawChart.lineTo(150, 80);
+        drawChart.lineTo(250, 30);
+        drawChart.stroke();//畫第一個菱形
+
+        drawChart.beginPath();
+        drawChart.moveTo(248, 130);
+        drawChart.lineTo(252, 130);
+        drawChart.lineTo(252, 180);
+        drawChart.lineTo(256, 180);
+        drawChart.lineTo(250, 186);
+        drawChart.lineTo(244, 180);
+        drawChart.lineTo(248, 180);
+        drawChart.fill();//畫第一個箭頭
+
+        drawChart.beginPath();
+        drawChart.moveTo(248, 235);
+        drawChart.lineTo(252, 235);
+        drawChart.lineTo(252, 285);
+        drawChart.lineTo(256, 285);
+        drawChart.lineTo(250, 291);
+        drawChart.lineTo(244, 285);
+        drawChart.lineTo(248, 285);
+        drawChart.fill();//畫第二個箭頭
+
+        drawChart.beginPath();
+        drawChart.moveTo(248, 342);
+        drawChart.lineTo(252, 342);
+        drawChart.lineTo(252, 392);
+        drawChart.lineTo(256, 392);
+        drawChart.lineTo(250, 398);
+        drawChart.lineTo(244, 392);
+        drawChart.lineTo(248, 392);
+        drawChart.fill();//畫第三個箭頭
+
+        drawChart.beginPath();
+        drawChart.moveTo(125, 423);
+        drawChart.lineTo(125, 427);
+        drawChart.lineTo(100, 427);
+        drawChart.lineTo(100, 78);
+        drawChart.lineTo(146, 78);
+        drawChart.lineTo(146, 74);
+        drawChart.lineTo(150, 80);
+        drawChart.lineTo(146, 86);
+        drawChart.lineTo(146, 82);
+        drawChart.lineTo(104, 82);
+        drawChart.lineTo(104, 423);
+        drawChart.fill();//畫回去的箭頭
+
+        drawChart.beginPath();
+        drawChart.moveTo(248, 450);
+        drawChart.lineTo(252, 450);
+        drawChart.lineTo(252, 500);
+        drawChart.lineTo(256, 500);
+        drawChart.lineTo(250, 506);
+        drawChart.lineTo(244, 500);
+        drawChart.lineTo(248, 500);
+        drawChart.fill();//畫第四個箭頭
+
+        drawChart.rect(125, 186, 260, 50);
+        drawChart.stroke();//畫"程式1"的矩形
+        drawChart.rect(125, 291, 260, 50);
+        drawChart.stroke();//畫"程式2"的矩形
+        drawChart.rect(125, 400, 260, 50);
+        drawChart.stroke();//畫"判斷式"的矩形
+        drawChart.rect(125, 508, 260, 50);
+        drawChart.stroke();//畫"結束"的矩形
+
+        drawChart.fillText('for i to ' + level, 190, 90);
+        drawChart.fillText('目前 i : ' + count, 350, 90);
+        drawChart.fillText('第i列印level個空白', 132, 220);
+        drawChart.fillText('第i列印2*level-1個*', 130, 325);
+        drawChart.fillText('判斷i是否小於level', 132, 435);
+        drawChart.fillText('結束迴圈', 190, 545);
+        drawChart.fillStyle = "green";
+        drawChart.fillText('true', 70, 460);
+        drawChart.fillStyle = "red";
+        drawChart.fillText('false', 260, 480);
+    }
+
+    function fillCode(i) {
+        drawCode.globalCompositeOperation = "destination-over";
+        drawCode.fillStyle = "khaki";
+        if (B[i] == 1) {
+            drawCode.fillRect(0, 65, 400, 20);
+            drawCode.clearRect(0, 105, 400, 40);
+            drawCode.fillStyle = "black";
+            drawCode.fillText('System.out.print("*");', 110, 120);
+            drawCode.fillText('System.out.println("");', 80, 140);
+        }
+        else if (B[i] == 2) {
+            drawCode.fillRect(0, 105, 400, 40);
+            drawCode.clearRect(0, 65, 400, 20);
+            drawCode.fillStyle = "black";
+            drawCode.fillText('System.out.print(" ");', 110, 80);
+        }
+        else if (B[i] == 4) {
+            drawCode.fillRect(0, 165, 400, 40);
+            drawCode.clearRect(0, 105, 400, 40);
+            drawCode.fillStyle = "black";
+            drawCode.fillText('System.out.print("*");', 110, 120);
+            drawCode.fillText('System.out.println("");', 80, 140);
+        }
+        else {
+            drawCode.clearRect(0, 105, 400, 40);
+            drawCode.fillStyle = "black";
+            drawCode.fillText('System.out.print("*");', 110, 120);
+            drawCode.fillText('System.out.println("");', 80, 140);
+        }
+    }
+
+    function fillChart(i) {
+        drawChart.globalCompositeOperation = "destination-over";
+        drawChart.fillStyle = "khaki";
+        if (B[i] == 1) {
+            drawChart.clearRect(125, 186, 260, 50);
+            drawChart.fillStyle = "black";
+            drawChart.fillText("第" + (i + 3) / 3 + "列印" + levelC + "個空白", 147, 220);
+            drawChart.clearRect(150, 30, 200, 100);
+            drawChart.fillStyle = "khaki";
+            drawChart.beginPath();
+            drawChart.moveTo(250, 30);
+            drawChart.lineTo(350, 80);
+            drawChart.lineTo(250, 130);
+            drawChart.lineTo(150, 80);
+            drawChart.lineTo(250, 30);
+            drawChart.stroke();//將菱形畫回去
+            drawChart.fillRect(125, 186, 260, 50);
+            drawChart.fillStyle = "black";
+            drawChart.fillText("for i to " + level, 190, 90);
+            drawChart.clearRect(350, 60, 2000, 40);
+            drawChart.fillText("目前 i : " + i / 3, 350, 90);
+        }
+        else if (B[i] == 2) {
+            drawChart.clearRect(125, 291, 260, 50);
+            drawChart.fillStyle = "black";
+            drawChart.fillText("第" + ((i + 2) / 3) + "列印" + (2 * ((i + 2) / 3) - 1) + "個*", 170, 325);
+            drawChart.fillStyle = "khaki";
+            drawChart.fillRect(125, 291, 260, 50);
+            drawChart.clearRect(125, 186, 260, 50);
+            drawChart.fillStyle = "black";
+            drawChart.fillText("第" + ((i + 2) / 3) + "列印" + levelC + "個空白", 147, 220);
+        }
+        else if (B[i] == 3) {
+            drawChart.clearRect(125, 291, 260, 50);
+            drawChart.fillStyle = "black";
+            drawChart.fillText("第" + ((i + 1) / 3) + "列印" + (2 * ((i + 1) / 3) - 1) + "個*", 170, 325);
+
+            drawChart.clearRect(150, 30, 200, 100);
+            drawChart.fillText('for i to ' + level, 190, 90);
+            drawChart.clearRect(350, 60, 2000, 40);
+            drawChart.fillText('目前 i : ' + (i + 1) / 3, 350, 90);
+            drawChart.fillStyle = "khaki";
+            drawChart.strokeStyle = 'black';
+            drawChart.beginPath();
+            drawChart.moveTo(250, 30);
+            drawChart.lineTo(350, 80);
+            drawChart.lineTo(250, 130);
+            drawChart.lineTo(150, 80);
+            drawChart.lineTo(250, 30);
+            drawChart.fill();
+            drawChart.beginPath();
+            drawChart.moveTo(250, 30);
+            drawChart.lineTo(350, 80);
+            drawChart.lineTo(250, 130);
+            drawChart.lineTo(150, 80);
+            drawChart.lineTo(250, 30);
+            drawChart.stroke();//將菱形畫回去
+            levelC--;
+        }
+        else {
+            drawChart.fillRect(125, 508, 260, 50);
+            drawChart.clearRect(125, 291, 260, 50);
+            drawChart.fillStyle = "black";
+            drawChart.fillText("第" + ((i + 1) / 3) + "列印" + (2 * ((i + 1) / 3) - 1) + "個*", 170, 325);
+        }
+    }
+
+    function draw3(i) {
+        drawImage.font = '50px serif';
+        if ((i+1) / 3 == 1)
+            drawImage.fillText('*', 240, 50);
+        else if ((i+1) / 3 == 2)
+            drawImage.fillText('***', 215, 75);
+        else if ((i+1) / 3 == 3)
+            drawImage.fillText('*****', 190, 100);
+        else if ((i+1) / 3 == 4)
+            drawImage.fillText('*******', 165, 125);
+        else if ((i+1) / 3 == 5)
+            drawImage.fillText('*********', 140, 150);
+        else if ((i+1) / 3 == 6)
+            drawImage.fillText('***********', 115, 175);
+        else if ((i+1) / 3 == 7)
+            drawImage.fillText('*************', 90, 200);
+        else if ((i+1) / 3 == 8)
+            drawImage.fillText('***************', 65, 225);
+        else if ((i+1) / 3 == 9)
+            drawImage.fillText('*****************', 40, 250);
+        else if ((i+1) / 3 == 10)
+            drawImage.fillText('*******************', 15, 275);
+    }
+
+</script>
+
+</html>

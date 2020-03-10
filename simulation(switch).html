@@ -1,0 +1,636 @@
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>switch</title>
+	<style>
+		#Pos {
+			margin-left: 40;
+			float: left;
+		}
+	</style>
+</head>
+<script>
+
+    var second = 0;
+    var stayTime,beforeTime;
+    function timeCount() {
+        beforeTime =  localStorage.getItem("stayTime");
+        stayTime = setInterval(function () {
+            second++;
+            localStorage.setItem("stayTime",beforeTime+"@學習系統-switch 停留時間："+second+"\n");
+        }, 1000);
+    }
+
+</script>
+<body onload='timeCount();'>
+	<div id="Pos">
+		原始成績：
+		<button type="button" id="random" onclick="Random()">亂數產生</button> <br><br>
+		<table style="border:solid thin;">
+			<tr>
+				<td>學生</td>
+				<td>第1位</td>
+				<td>第2位</td>
+				<td>第3位</td>
+				<td>第4位</td>
+				<td>第5位</td>
+				<td>第6位</td>
+				<td>第7位</td>
+				<td>第8位</td>
+				<td>第9位</td>
+				<td>第10位</td>
+			</tr>
+			<tr>
+				<td>成績</td>
+				<td><input style="width:45px" type="number" id="input0"></td>
+				<td><input style="width:45px" type="number" id="input1"></td>
+				<td><input style="width:45px" type="number" id="input2"></td>
+				<td><input style="width:45px" type="number" id="input3"></td>
+				<td><input style="width:45px" type="number" id="input4"></td>
+				<td><input style="width:45px" type="number" id="input5"></td>
+				<td><input style="width:45px" type="number" id="input6"></td>
+				<td><input style="width:45px" type="number" id="input7"></td>
+				<td><input style="width:45px" type="number" id="input8"></td>
+				<td><input style="width:45px" type="number" id="input9"></td>
+			</tr>
+		</table>
+		模式：
+		<input type="radio" id="mode1" name="mode" onclick="mode = 1;"> Animation
+		<input type="radio" id="mode2" name="mode" onclick="mode = 2;"> Step
+		<input type="radio" id="mode3" name="mode" onclick="mode = 3;"> Run-all
+		<br>
+		速度：
+		<input type="radio" id="speed1" name="speed" onclick="speed = 1;"> 快
+		<input type="radio" id="speed2" name="speed" onclick="speed = 2;"> 中
+		<input type="radio" id="speed3" name="speed" onclick="speed = 3;"> 慢
+		<br>
+		<button id="start" onclick="start()"> 開始處理 </button>
+		<button id="next" onclick="next()" disabled='true'> 下一步 </button>
+		<button id="clear" onclick="restart()"> 清除所有欄位 </button>
+		<br>
+		<div id="Pos">
+			<canvas id="showCode" width="260" height="350">
+				This text is displayed if your browser does not support HTML5 Canvas.
+			</canvas>
+		</div>
+		<canvas id="showChart" width="820" height="400">
+			This text is displayed if your browser does not support HTML5 Canvas.
+		</canvas>
+		<br>
+		目前步驟：
+		<br>
+		<textarea cols="100" rows="3" readonly="readonly" id="process1"></textarea><br>
+		所有過程：
+		<br>
+		<textarea cols="100" rows="10" readonly="readonly" id="process2"></textarea><br>
+	</div>
+</body>
+<script>
+	var interval;
+	var mode = speed = 0;
+	var delay = 1000;
+	var allStep = [];
+	var A = [];
+	var B = new Array(10);
+	var count = allCount = animeCount = nextCount =  0;
+	var showFlowChart2 = document.getElementById("showChart");
+	var drawFlowChart2 = showFlowChart2.getContext("2d");
+	var canvas = document.getElementById('showCode');
+	var code = canvas.getContext("2d");
+
+	var A0 = document.getElementById("input0");
+	var A1 = document.getElementById("input1");
+	var A2 = document.getElementById("input2");
+	var A3 = document.getElementById("input3");
+	var A4 = document.getElementById("input4");
+	var A5 = document.getElementById("input5");
+	var A6 = document.getElementById("input6");
+	var A7 = document.getElementById("input7");
+	var A8 = document.getElementById("input8");
+	var A9 = document.getElementById("input9");
+
+	function start() {
+		if (A0.value == "" || A1.value == "" || A2.value == "" || A3.value == "" || A4.value == "" || A5.value == "" || A6.value == "" || A7.value == "" || A8.value == "" || A9.value == "") {
+			alert("請輸入陣列內容");
+			return;
+		}
+		else if (mode == 1) {
+			if (speed == 1)
+				delay = 1000;
+			else if (speed == 2)
+				delay = 2000;
+			else if (speed == 3)
+				delay = 3000;
+			else {
+				alert("請選擇速度");
+				return;
+			}
+		}
+		else if (mode == 2) {
+			document.getElementById('next').disabled = false;
+			document.getElementById('start').disabled = true;
+		}
+		else if (mode == 3)
+			document.getElementById('start').disabled = true;
+		else {
+			alert("請選擇顯示模式");
+			return;
+		}
+		document.getElementById('random').disabled = true;
+		document.getElementById('mode1').disabled = true;
+		document.getElementById('mode2').disabled = true;
+		document.getElementById('mode3').disabled = true;
+		document.getElementById('speed1').disabled = true;
+		document.getElementById('speed2').disabled = true;
+		document.getElementById('speed3').disabled = true;
+		clear();
+		drawCode();
+		drawChart();
+		cal();
+		if (mode == 1)
+			interval = setInterval(anime, delay);
+		else if (mode == 3) {
+			while (allCount < allStep.length) {
+				process1.value = allStep[allCount];
+				process2.value += allStep[allCount];
+				fillCode(allCount);
+				fillChart(allCount);
+				allCount++;
+			}
+		}
+	}
+
+	function next() {
+		if (nextCount < allStep.length) {
+			process1.value = allStep[nextCount];
+			process2.value += allStep[nextCount];
+			fillCode(nextCount);
+			fillChart(nextCount);
+		}
+		nextCount++;
+		if (nextCount== allStep.length) {
+			document.getElementById('next').disabled = true;
+		}
+	}
+
+	function restart() {
+		document.getElementById('start').disabled = false;
+		document.getElementById('next').disabled = true;
+		document.getElementById('random').disabled = false;
+		document.getElementById('start').checked = false;
+		document.getElementById('mode1').checked = false;
+		document.getElementById('mode2').checked = false;
+		document.getElementById('mode3').checked = false;
+		document.getElementById('speed1').checked = false;
+		document.getElementById('speed2').checked = false;
+		document.getElementById('speed3').checked = false;
+		document.getElementById('mode1').disabled = false;
+		document.getElementById('mode2').disabled = false;
+		document.getElementById('mode3').disabled = false;
+		document.getElementById('speed1').disabled = false;
+		document.getElementById('speed2').disabled = false;
+		document.getElementById('speed3').disabled = false;
+
+		A0.value = "";
+		A1.value = "";
+		A2.value = "";
+		A3.value = "";
+		A4.value = "";
+		A5.value = "";
+		A6.value = "";
+		A7.value = "";
+		A8.value = "";
+		A9.value = "";
+
+		mode = speed = 0;
+		delay = 1000;
+
+		clear();
+	}
+
+	function anime() {
+		if (animeCount < allStep.length) {
+			process1.value = allStep[animeCount];
+			process2.value += allStep[animeCount];
+			fillCode(animeCount);
+			fillChart(animeCount);
+		}
+		animeCount++;
+		// result
+		if (animeCount == allStep.length)
+			clearInterval(interval);
+	}
+
+	function clear() {
+		allStep = [];
+		A = [];
+		B = [];
+		count  = nextCount = allCount = animeCount= 0;
+
+		process1.value = "";
+		process2.value = "";
+
+		clearInterval(interval);
+
+		code.clearRect(0, 0, 260, 350);
+		drawFlowChart2.clearRect(0, 0, 820, 400);
+	}
+
+	function cal() {
+		readTable();
+		for (var i = 0; i < 10; i++) {
+			if (A[i] / 10 >= 9) {
+				allStep[count] = "第" + [i + 1] + "位學生" + A[i] + "分，符合case10跟case9拿到A\n";
+				B[i] = 1;
+			}
+			else if (A[i] / 10 >= 8) {
+				allStep[count] = "第" + [i + 1] + "位學生" + A[i] + "分，符合case8拿到B\n";
+				B[i] = 2;
+			}
+			else if (A[i] / 10 >= 7) {
+				allStep[count] = "第" + [i + 1] + "位學生" + A[i] + "分，符合case7拿到C\n";
+				B[i] = 3;
+			}
+			else if (A[i] / 10 >= 6) {
+				allStep[count] = "第" + [i + 1] + "位學生" + A[i] + "分，符合case6拿到D\n";
+				B[i] = 4;
+			}
+			else {
+				allStep[count] = "第" + [i + 1] + "位學生" + A[i] + "分，不符合以上case跳到default拿到E\n";
+				B[i] = 0;
+			}
+			count++;
+		}
+	}
+
+	function Random() {
+		A0.value = Math.floor(Math.random() * 100);
+		A1.value = Math.floor(Math.random() * 100);
+		A2.value = Math.floor(Math.random() * 100);
+		A3.value = Math.floor(Math.random() * 100);
+		A4.value = Math.floor(Math.random() * 100);
+		A5.value = Math.floor(Math.random() * 100);
+		A6.value = Math.floor(Math.random() * 100);
+		A7.value = Math.floor(Math.random() * 100);
+		A8.value = Math.floor(Math.random() * 100);
+		A9.value = Math.floor(Math.random() * 100);
+	}
+
+	function readTable() {
+		A[0] = parseInt(A0.value);
+		A[1] = parseInt(A1.value);
+		A[2] = parseInt(A2.value);
+		A[3] = parseInt(A3.value);
+		A[4] = parseInt(A4.value);
+		A[5] = parseInt(A5.value);
+		A[6] = parseInt(A6.value);
+		A[7] = parseInt(A7.value);
+		A[8] = parseInt(A8.value);
+		A[9] = parseInt(A9.value);
+	}
+
+	function drawCode() {
+		code.fillStyle = "black";
+		code.font = "18px Verdana";
+		code.fillText("switch(score / 10){", 50, 20);
+		code.fillText("case 10:case 9:", 50, 40);
+		code.fillText('println("A");', 80, 60);
+		code.fillText("break;", 80, 80);
+		code.fillText("case 8:", 50, 100);
+		code.fillText('println("B");', 80, 120);
+		code.fillText("break;", 80, 140);
+		code.fillText("case 7:", 50, 160);
+		code.fillText('println("C");', 80, 180);
+		code.fillText("break;", 80, 200);
+		code.fillText("case 6:", 50, 220);
+		code.fillText('println("D");', 80, 240);
+		code.fillText("break;", 80, 260);
+		code.fillText("default", 50, 280);
+		code.fillText('println("E");', 80, 300);
+		code.fillText("break;", 80, 320);
+		code.fillText("}", 50, 340);
+	}
+
+	function drawChart() {
+		//switch 的流程圖
+		var circle1 = new Path2D();
+		circle1.moveTo(150, 80);
+		circle1.arc(100, 80, 50, 0, 2 * Math.PI);
+		drawFlowChart2.stroke(circle1);
+		drawFlowChart2.font = '30px serif';//畫第一個圓圈
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(98, 130);
+		drawFlowChart2.lineTo(102, 130);
+		drawFlowChart2.lineTo(102, 180);
+		drawFlowChart2.lineTo(106, 180);
+		drawFlowChart2.lineTo(100, 186);
+		drawFlowChart2.lineTo(94, 180);
+		drawFlowChart2.lineTo(98, 180);
+		drawFlowChart2.lineTo(98, 130);
+		drawFlowChart2.fill();//畫第一個箭頭
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(100, 186);
+		drawFlowChart2.lineTo(150, 221);
+		drawFlowChart2.lineTo(100, 256);
+		drawFlowChart2.lineTo(50, 221);
+		drawFlowChart2.lineTo(100, 186);
+		drawFlowChart2.stroke();//畫第一個菱形
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(98, 256);
+		drawFlowChart2.lineTo(102, 256);
+		drawFlowChart2.lineTo(102, 316);
+		drawFlowChart2.lineTo(106, 316);
+		drawFlowChart2.lineTo(100, 322);
+		drawFlowChart2.lineTo(94, 316);
+		drawFlowChart2.lineTo(98, 316);
+		drawFlowChart2.fill();//畫第二個箭頭
+
+		drawFlowChart2.rect(50, 322, 100, 50);
+		drawFlowChart2.stroke();//畫程式1的矩形
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(150, 219);
+		drawFlowChart2.lineTo(150, 223);
+		drawFlowChart2.lineTo(210, 223);
+		drawFlowChart2.lineTo(210, 227);
+		drawFlowChart2.lineTo(218, 221);
+		drawFlowChart2.lineTo(210, 215);
+		drawFlowChart2.lineTo(210, 219);
+		drawFlowChart2.fill();//畫第三個箭頭
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(267, 186);
+		drawFlowChart2.lineTo(317, 221);
+		drawFlowChart2.lineTo(267, 256);
+		drawFlowChart2.lineTo(217, 221);
+		drawFlowChart2.lineTo(267, 186);
+		drawFlowChart2.stroke();//畫第二個菱形
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(265, 256);
+		drawFlowChart2.lineTo(269, 256);
+		drawFlowChart2.lineTo(269, 316);
+		drawFlowChart2.lineTo(273, 316);
+		drawFlowChart2.lineTo(267, 322);
+		drawFlowChart2.lineTo(261, 316);
+		drawFlowChart2.lineTo(265, 316);
+		drawFlowChart2.fill();//畫第四個箭頭	
+
+		drawFlowChart2.rect(220, 322, 100, 50);
+		drawFlowChart2.stroke();//畫程式2的矩形	
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(315, 219);
+		drawFlowChart2.lineTo(315, 223);
+		drawFlowChart2.lineTo(375, 223);
+		drawFlowChart2.lineTo(375, 227);
+		drawFlowChart2.lineTo(383, 221);
+		drawFlowChart2.lineTo(375, 215);
+		drawFlowChart2.lineTo(375, 219);
+		drawFlowChart2.fill();//畫第五個箭頭
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(434, 186);
+		drawFlowChart2.lineTo(484, 221);
+		drawFlowChart2.lineTo(434, 256);
+		drawFlowChart2.lineTo(384, 221);
+		drawFlowChart2.lineTo(434, 186);
+		drawFlowChart2.stroke();//畫第三個菱形
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(433, 256);
+		drawFlowChart2.lineTo(437, 256);
+		drawFlowChart2.lineTo(437, 316);
+		drawFlowChart2.lineTo(441, 316);
+		drawFlowChart2.lineTo(435, 322);
+		drawFlowChart2.lineTo(429, 316);
+		drawFlowChart2.lineTo(433, 316);
+		drawFlowChart2.fill();//畫第六個箭頭
+
+		drawFlowChart2.rect(390, 322, 100, 50);
+		drawFlowChart2.stroke();//畫程式3的矩形	
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(483, 219);
+		drawFlowChart2.lineTo(483, 223);
+		drawFlowChart2.lineTo(543, 223);
+		drawFlowChart2.lineTo(543, 227);
+		drawFlowChart2.lineTo(551, 221);
+		drawFlowChart2.lineTo(543, 215);
+		drawFlowChart2.lineTo(543, 219);
+		drawFlowChart2.fill();//畫第七個箭頭
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(600, 186);
+		drawFlowChart2.lineTo(650, 221);
+		drawFlowChart2.lineTo(600, 256);
+		drawFlowChart2.lineTo(550, 221);
+		drawFlowChart2.lineTo(600, 186);
+		drawFlowChart2.stroke();//畫第三個菱形
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(598, 256);
+		drawFlowChart2.lineTo(602, 256);
+		drawFlowChart2.lineTo(602, 316);
+		drawFlowChart2.lineTo(606, 316);
+		drawFlowChart2.lineTo(600, 322);
+		drawFlowChart2.lineTo(594, 316);
+		drawFlowChart2.lineTo(598, 316);
+		drawFlowChart2.fill();//畫第八個箭頭
+
+		drawFlowChart2.rect(555, 322, 100, 50);
+		drawFlowChart2.stroke();//畫程式4的矩形	
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(650, 219);
+		drawFlowChart2.lineTo(650, 223);
+		drawFlowChart2.lineTo(710, 223);
+		drawFlowChart2.lineTo(710, 227);
+		drawFlowChart2.lineTo(718, 221);
+		drawFlowChart2.lineTo(710, 215);
+		drawFlowChart2.lineTo(710, 219);
+		drawFlowChart2.fill();//畫第九個箭頭
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(767, 186);
+		drawFlowChart2.lineTo(817, 221);
+		drawFlowChart2.lineTo(767, 256);
+		drawFlowChart2.lineTo(717, 221);
+		drawFlowChart2.lineTo(767, 186);
+		drawFlowChart2.stroke();//畫第四個菱形
+
+		drawFlowChart2.beginPath();
+		drawFlowChart2.moveTo(765, 256);
+		drawFlowChart2.lineTo(769, 256);
+		drawFlowChart2.lineTo(769, 316);
+		drawFlowChart2.lineTo(773, 316);
+		drawFlowChart2.lineTo(767, 322);
+		drawFlowChart2.lineTo(761, 316);
+		drawFlowChart2.lineTo(765, 316);
+		drawFlowChart2.fill();//畫第十個箭頭
+
+		drawFlowChart2.rect(715, 322, 100, 50);
+		drawFlowChart2.stroke();//畫default的矩形	
+
+		drawFlowChart2.font = '30px serif';
+		drawFlowChart2.fillText('開始', 70, 90);
+		drawFlowChart2.fillText('條件1', 65, 230);
+		drawFlowChart2.fillText('輸出A', 65, 357);
+		drawFlowChart2.fillText('條件2', 230, 230);
+		drawFlowChart2.fillText('輸出B', 235, 357);
+		drawFlowChart2.fillText('條件3', 395, 230);
+		drawFlowChart2.fillText('輸出C', 405, 357);
+		drawFlowChart2.fillText('條件4', 560, 230);
+		drawFlowChart2.fillText('輸出D', 570, 357);
+		drawFlowChart2.fillText('default', 730, 230);
+		drawFlowChart2.fillText('輸出E', 730, 357);
+		drawFlowChart2.fillStyle = "green";
+		drawFlowChart2.fillText('是', 110, 280);
+		drawFlowChart2.fillText('是', 280, 280);
+		drawFlowChart2.fillText('是', 450, 280);
+		drawFlowChart2.fillText('是', 610, 280);
+		drawFlowChart2.fillText('是', 780, 280);
+		drawFlowChart2.fillStyle = "red";
+		drawFlowChart2.fillText('否', 150, 210);
+		drawFlowChart2.fillText('否', 315, 210);
+		drawFlowChart2.fillText('否', 480, 210);
+		drawFlowChart2.fillText('否', 645, 210);
+		drawFlowChart2.fillStyle = "black";
+	}
+
+	function fillCode(i) {
+		code.globalCompositeOperation = "destination-over";
+		code.fillStyle = "khaki";
+		if (B[i] == 1) {
+			code.fillRect(0, 45, 300, 20);
+			code.clearRect(0, 105, 300, 20);
+			code.clearRect(0, 165, 300, 20);
+			code.clearRect(0, 225, 300, 20);
+			code.clearRect(0, 285, 300, 20);
+			code.fillStyle = "black";
+			code.fillText('println("B");', 80, 120);
+			code.fillText('println("C");', 80, 180);
+			code.fillText('println("D");', 80, 240);
+			code.fillText('println("E");', 80, 300);
+		}
+		else if (B[i] == 2) {
+			code.fillRect(0, 105, 300, 20);
+			code.clearRect(0, 45, 300, 20);
+			code.clearRect(0, 165, 300, 20);
+			code.clearRect(0, 225, 300, 20);
+			code.clearRect(0, 285, 300, 20);
+			code.fillStyle = "black";
+			code.fillText('println("A");', 80, 60);
+			code.fillText('println("C");', 80, 180);
+			code.fillText('println("D");', 80, 240);
+			code.fillText('println("E");', 80, 300);
+		}
+		else if (B[i] == 3) {
+			code.fillRect(0, 165, 300, 20);
+			code.clearRect(0, 45, 300, 20);
+			code.clearRect(0, 105, 300, 20);
+			code.clearRect(0, 225, 300, 20);
+			code.clearRect(0, 285, 300, 20);
+			code.fillStyle = "black";
+			code.fillText('println("A");', 80, 60);
+			code.fillText('println("B");', 80, 120);
+			code.fillText('println("D");', 80, 240);
+			code.fillText('println("E");', 80, 300);
+		}
+		else if (B[i] == 4) {
+			code.fillRect(0, 225, 300, 20);
+			code.clearRect(0, 45, 300, 20);
+			code.clearRect(0, 105, 300, 20);
+			code.clearRect(0, 165, 300, 20);
+			code.clearRect(0, 285, 300, 20);
+			code.fillStyle = "black";
+			code.fillText('println("A");', 80, 60);
+			code.fillText('println("B");', 80, 120);
+			code.fillText('println("C");', 80, 180);
+			code.fillText('println("E");', 80, 300);
+		}
+		else {
+			code.fillRect(0, 285, 300, 20);
+			code.clearRect(0, 45, 300, 20);
+			code.clearRect(0, 105, 300, 20);
+			code.clearRect(0, 165, 300, 20);
+			code.clearRect(0, 225, 300, 20);
+			code.fillStyle = "black";
+			code.fillText('println("A");', 80, 60);
+			code.fillText('println("B");', 80, 120);
+			code.fillText('println("C");', 80, 180);
+			code.fillText('println("D");', 80, 240);
+		}
+	}
+
+	function fillChart(i) {
+		drawFlowChart2.globalCompositeOperation = "destination-over";
+		drawFlowChart2.fillStyle = "khaki";
+		if (B[i] == 1) {
+			drawFlowChart2.fillRect(50, 322, 100, 50);
+			drawFlowChart2.clearRect(220, 322, 100, 50);
+			drawFlowChart2.clearRect(390, 322, 100, 50);
+			drawFlowChart2.clearRect(555, 322, 100, 50);
+			drawFlowChart2.clearRect(715, 322, 100, 50);
+			drawFlowChart2.fillStyle = "black";
+			drawFlowChart2.fillText('輸出B', 235, 357);
+			drawFlowChart2.fillText('輸出C', 405, 357);
+			drawFlowChart2.fillText('輸出D', 570, 357);
+			drawFlowChart2.fillText('輸出E', 730, 357);
+		}
+		else if (B[i] == 2) {
+			drawFlowChart2.clearRect(50, 322, 100, 50);
+			drawFlowChart2.fillRect(220, 322, 100, 50);
+			drawFlowChart2.clearRect(390, 322, 100, 50);
+			drawFlowChart2.clearRect(555, 322, 100, 50);
+			drawFlowChart2.clearRect(715, 322, 100, 50);
+			drawFlowChart2.fillStyle = "black";
+			drawFlowChart2.fillText('輸出A', 65, 357);
+			drawFlowChart2.fillText('輸出C', 405, 357);
+			drawFlowChart2.fillText('輸出D', 570, 357);
+			drawFlowChart2.fillText('輸出E', 730, 357);
+		}
+		else if (B[i] == 3) {
+			drawFlowChart2.clearRect(50, 322, 100, 50);
+			drawFlowChart2.clearRect(220, 322, 100, 50);
+			drawFlowChart2.fillRect(390, 322, 100, 50);
+			drawFlowChart2.clearRect(555, 322, 100, 50);
+			drawFlowChart2.clearRect(715, 322, 100, 50);
+			drawFlowChart2.fillStyle = "black";
+			drawFlowChart2.fillText('輸出A', 65, 357);
+			drawFlowChart2.fillText('輸出B', 235, 357);
+			drawFlowChart2.fillText('輸出D', 570, 357);
+			drawFlowChart2.fillText('輸出E', 730, 357);
+		}
+		else if (B[i] == 4) {
+			drawFlowChart2.clearRect(50, 322, 100, 50);
+			drawFlowChart2.clearRect(220, 322, 100, 50);
+			drawFlowChart2.clearRect(390, 322, 100, 50);
+			drawFlowChart2.fillRect(555, 322, 100, 50);
+			drawFlowChart2.clearRect(715, 322, 100, 50);
+			drawFlowChart2.fillStyle = "black";
+			drawFlowChart2.fillText('輸出A', 65, 357);
+			drawFlowChart2.fillText('輸出B', 235, 357);
+			drawFlowChart2.fillText('輸出C', 405, 357);
+			drawFlowChart2.fillText('輸出E', 730, 357);
+		}
+		else {
+			drawFlowChart2.clearRect(50, 322, 100, 50);
+			drawFlowChart2.clearRect(220, 322, 100, 50);
+			drawFlowChart2.clearRect(390, 322, 100, 50);
+			drawFlowChart2.clearRect(555, 322, 100, 50);
+			drawFlowChart2.fillRect(715, 322, 100, 50);
+			drawFlowChart2.fillStyle = "black";
+			drawFlowChart2.fillText('輸出A', 65, 357);
+			drawFlowChart2.fillText('輸出B', 235, 357);
+			drawFlowChart2.fillText('輸出C', 405, 357);
+			drawFlowChart2.fillText('輸出D', 570, 357);
+		}
+	}
+</script>
+
+</html>

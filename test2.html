@@ -1,0 +1,82 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="css/textfield.css">
+</head>
+<script language=javascript src='js/question.js'>
+</script>
+<script language=javascript src='js/test2.js'>
+</script>
+
+<body onload="shprob();timeCount();">
+    <b class="title">動態評量測驗</b>
+    <hr>
+    <div class="body-container">
+        <span class="subtitle">
+            題目</span>
+        <br>
+        <p id='prob'> </p>
+        <div class= "textfield">
+            <input type=text id='s1'>
+            <span class="o bottom"></span>
+            <span class="o right"></span>
+            <span class="o top"></span>
+            <span class="o left"></span>
+        </div>
+        <button class="cbutton" onclick="check();" id='c1'>CHECK</button><br><br>
+        <canvas id="pic" width="50" height="50">
+            This text is displayed if your browser does not support HTML5 Canvas.</canvas>
+        <table style="border: 1px #000000 solid" border='1'>
+            <tr>
+                <td>
+                    <font size=2><b>任何運算子與運算元之間必須空一格，括號前後不須空格，逗號、分號後面空一格。<br>例:for(int x = 5, y++; x &lt; 10; x++)</b>
+                    </font>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <span class="timer">
+        得分：<span id='score' class="sc"> 0 </span>分</span><br><br>
+        提示：<p id='prompt' style="color: red">---第一次作答錯誤後才有提示---</p>
+        <script>
+            var canvas1 = document.getElementById("pic");
+            var canvasChart = canvas1.getContext("2d");
+
+            function drawCircle() {
+                canvasChart.fillStyle = "white";
+                canvasChart.fillRect(0, 0, 50, 50);
+                canvasChart.fillStyle = "#008866";
+                var circle1 = new Path2D();
+                canvasChart.beginPath();
+                circle1.arc(25, 25, 20, 0 * Math.PI, 2 * Math.PI);
+                canvasChart.fill(circle1);//畫第一個圓圈
+                canvasChart.fillStyle = "#FFFFFF";
+                var circle1 = new Path2D();
+                canvasChart.beginPath();
+                circle1.arc(25, 25, 13, 0 * Math.PI, 2 * Math.PI);
+                canvasChart.fill(circle1);//畫第二個圓圈
+            }
+
+            function drawCross() {
+                canvasChart.fillStyle = "white";
+                canvasChart.fillRect(0, 0, 50, 50);
+                canvasChart.fillStyle = "#A42D00";
+                canvasChart.beginPath();
+                canvasChart.moveTo(6, 12);
+                canvasChart.lineTo(12, 6);
+                canvasChart.lineTo(44, 38);
+                canvasChart.lineTo(38, 44);
+                canvasChart.fill();//畫X的\
+
+                canvasChart.beginPath();
+                canvasChart.moveTo(38, 6);
+                canvasChart.lineTo(44, 12);
+                canvasChart.lineTo(12, 44);
+                canvasChart.lineTo(6, 38);
+                canvasChart.fill();//畫X的/
+            }
+
+        </script>
+</body>
+
+</html>

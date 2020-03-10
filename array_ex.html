@@ -1,0 +1,503 @@
+<html>
+<meta charset="utf-8">
+<title>學習系統-Array實例</title>
+<script>
+
+    var second = 0;
+    var stayTime,beforeTime;
+    function timeCount() {
+        beforeTime =  localStorage.getItem("stayTime");
+        stayTime = setInterval(function () {
+            second++;
+            localStorage.setItem("stayTime",beforeTime+"@學習系統-Array實例 停留時間："+second+"\n");
+        }, 1000);
+    }
+
+</script>
+<body onload='timeCount();'>
+    原始陣列(範圍請在0-100之間)：
+    <button type="button" id="random" onclick="Random()">亂數產生</button> <br><br>
+    <table style="border:solid thin;">
+        <tr>
+            <td>A[0]</td>
+            <td>A[1]</td>
+            <td>A[2]</td>
+            <td>A[3]</td>
+            <td>A[4]</td>
+            <td>A[5]</td>
+            <td>A[6]</td>
+            <td>A[7]</td>
+            <td>A[8]</td>
+            <td>A[9]</td>
+        </tr>
+        <tr>
+            <td><input style="width:45px" type="number" id="input0"></td>
+            <td><input style="width:45px" type="number" id="input1"></td>
+            <td><input style="width:45px" type="number" id="input2"></td>
+            <td><input style="width:45px" type="number" id="input3"></td>
+            <td><input style="width:45px" type="number" id="input4"></td>
+            <td><input style="width:45px" type="number" id="input5"></td>
+            <td><input style="width:45px" type="number" id="input6"></td>
+            <td><input style="width:45px" type="number" id="input7"></td>
+            <td><input style="width:45px" type="number" id="input8"></td>
+            <td><input style="width:45px" type="number" id="input9"></td>
+        </tr>
+    </table>
+    模式：
+    <input type="radio" id="mode1" name="mode" onclick="mode = 1;"> Animation
+    <input type="radio" id="mode2" name="mode" onclick="mode = 2;"> Step
+    <input type="radio" id="mode3" name="mode" onclick="mode = 3;"> Run All
+    <br>
+    速度：
+    <input type="radio" id="speed1" name="speed" onclick="speed = 1;"> 快
+    <input type="radio" id="speed2" name="speed" onclick="speed = 2;"> 中
+    <input type="radio" id="speed3" name="speed" onclick="speed = 3;"> 慢
+    <br>
+    <button id="start" onclick="start()"> 開始處理 </button>
+    <button id="next" onclick="next()" disabled='true'> 下一步 </button>
+    <button id="clear" onclick="restart()"> 清除所有欄位 </button>
+    <br>
+    <div id="Pos">
+        <canvas id="canvasCode" width="550" height="250">
+            This text is displayed if your browser does not support HTML5 Canvas.
+        </canvas>
+    </div>
+    <canvas id="canvasChart" width="1000" height="300">
+        This text is displayed if your browser does not support HTML5 Canvas.
+    </canvas>
+    <br>
+    目前步驟：
+    <br>
+    <textarea cols="100" rows="4" readonly="readonly" id="process1"></textarea><br>
+    所有過程：
+    <br>
+    <textarea cols="100" rows="16" readonly="readonly" id="process2"></textarea><br>
+</body>
+<script>
+    var interval;
+    var mode = speed = 0;
+    var delay = 1000;
+    var allStep = [];
+    var A = [];
+    var AOld = [];
+    var Sc = [0];
+    var storeArr = [];
+    var ScIn = [];
+    var arrCount = 0;
+    var stepCount = 0;
+    var countNext = countAnime = 0;
+    var canvas1 = document.getElementById('canvasChart');
+    var canvasChart = canvas1.getContext('2d');
+    var canvas2 = document.getElementById('canvasCode');
+    var canvasCode = canvas2.getContext('2d');
+
+    var A0 = document.getElementById("input0");
+    var A1 = document.getElementById("input1");
+    var A2 = document.getElementById("input2");
+    var A3 = document.getElementById("input3");
+    var A4 = document.getElementById("input4");
+    var A5 = document.getElementById("input5");
+    var A6 = document.getElementById("input6");
+    var A7 = document.getElementById("input7");
+    var A8 = document.getElementById("input8");
+    var A9 = document.getElementById("input9");
+    function start() {
+        canvasCode.clearRect(0, 0, 550, 200);
+        canvasChart.clearRect(0, 0, 1000, 300);
+        clearInterval(interval);
+        countAnime = 0;
+        arrCount = 0;
+        Sc=[0,0,0,0,0];
+        process1.value = "";
+        process2.value = "";
+        document.getElementById('random').disabled = true;
+        if (A0.value == "" || A1.value == "" || A2.value == "" || A3.value == "" || A4.value == "" || A5.value == "" || A6.value == "" || A7.value == "" || A8.value == "" || A9.value == "") {
+            alert("請輸入陣列內容");
+            document.getElementById('random').disabled = false;
+            return;
+        }
+        if (A0.value > 100 || A1.value > 100 || A2.value > 100 || A3.value > 100 || A4.value > 100 || A5.value > 100 || A6.value > 100 || A7.value > 100 || A8.value > 100 || A9.value > 100) {
+            alert("範圍請在0-100之間");
+            document.getElementById('random').disabled = false;
+            return;
+        }
+        if (A0.value < 0 || A1.value < 0 || A2.value < 0 || A3.value < 0 || A4.value < 0 || A5.value < 0 || A6.value < 0 || A7.value < 0 || A8.value < 0 || A9.value < 0) {
+            alert("範圍請在0-100之間");
+            document.getElementById('random').disabled = false;
+            return;
+        }
+        if (mode == 1) {
+            if (speed == 1)
+                delay = 1000;
+            else if (speed == 2)
+                delay = 2000;
+            else if (speed == 3)
+                delay = 3000;
+            else {
+                alert("請選擇速度");
+                document.getElementById('random').disabled = false;
+                return;
+            }
+        }
+        else if (mode == 2) {
+            document.getElementById('next').disabled = false;
+            document.getElementById('start').disabled = true;
+        }
+        else if (mode == 3) {
+            document.getElementById('next').disabled = true;
+            document.getElementById('start').disabled = true;
+        }
+        else {
+            alert("請選擇顯示模式");
+            document.getElementById('random').disabled = false;
+            return;
+        }
+
+        document.getElementById('mode1').disabled = true;
+        document.getElementById('mode2').disabled = true;
+        document.getElementById('mode3').disabled = true;
+        drawCode();
+        drawChart();
+        if(stepCount == 0)
+        {
+            cal();
+        }
+        if (mode == 1) {
+            interval = setInterval(anime, delay);
+            document.getElementById('start').disabled = false;
+            document.getElementById('speed1').disabled = false;
+            document.getElementById('speed2').disabled = false;
+            document.getElementById('speed3').disabled = false;
+        }
+        else {
+            document.getElementById('start').disabled = true;
+            document.getElementById('speed1').disabled = true;
+            document.getElementById('speed2').disabled = true;
+            document.getElementById('speed3').disabled = true;
+        }
+        if (mode == 3) {
+            RunAll();
+        }
+    }
+    function next() {
+        if (countNext < allStep.length) {
+            process1.value = allStep[countNext];
+            process2.value += allStep[countNext];
+            process2.scrollTop = process2.scrollHeight;
+            fillChart(countNext);
+            fillCode(countNext);
+            drawCode();
+            drawChart();
+        }
+        else {
+            document.getElementById('next').disabled = true;
+        }
+        countNext++;
+    }
+    function anime() {
+        if (countAnime < allStep.length) {
+            process1.value = allStep[countAnime];
+            process2.value += allStep[countAnime];
+            process2.scrollTop = process2.scrollHeight;
+            fillChart(countAnime);
+            fillCode(countAnime);
+            drawCode();
+            drawChart();
+        }
+        countAnime++;
+        // result
+        if (countAnime == allStep.length)
+            clearInterval(interval);
+    }
+    function RunAll() {
+        for (var i = 0; i < allStep.length; i++) {
+            process1.value = allStep[i];
+            process2.value += allStep[i];
+            process2.scrollTop = process2.scrollHeight;
+            fillChart(i);
+            fillCode(i);
+        }
+        drawCode();
+        drawChart();
+    }
+    function restart() {
+        clearInterval(interval);
+        document.getElementById('start').disabled = false;
+        document.getElementById('next').disabled = true;
+        document.getElementById('random').disabled = false;
+        document.getElementById('start').checked = false;
+        document.getElementById('mode1').checked = false;
+        document.getElementById('mode2').checked = false;
+        document.getElementById('mode3').checked = false;
+        document.getElementById('speed1').checked = false;
+        document.getElementById('speed2').checked = false;
+        document.getElementById('speed3').checked = false;
+        document.getElementById('mode1').disabled = false;
+        document.getElementById('mode2').disabled = false;
+        document.getElementById('mode3').disabled = false;
+        document.getElementById('speed1').disabled = false;
+        document.getElementById('speed2').disabled = false;
+        document.getElementById('speed3').disabled = false;
+
+        A0.value = "";
+        A1.value = "";
+        A2.value = "";
+        A3.value = "";
+        A4.value = "";
+        A5.value = "";
+        A6.value = "";
+        A7.value = "";
+        A8.value = "";
+        A9.value = "";
+        clear();
+    }
+    function clear() {
+        mode = speed = 0;
+        delay = 1000;
+        allStep = [];
+        A = [];
+        AOld = [];
+        Sc = [];
+        ScIn = [];
+        storeArr = [];
+        arrCount = 0;
+        stepCount = 0;
+        countNext = 0;
+        countAnime = 0;
+
+        process1.value = "";
+        process2.value = "";
+
+        canvasCode.clearRect(0, 0, 550, 250);
+        canvasChart.clearRect(0, 0, 1000, 300);
+    }
+    function readTable() {
+        A[0] = parseInt(A0.value);
+        A[1] = parseInt(A1.value);
+        A[2] = parseInt(A2.value);
+        A[3] = parseInt(A3.value);
+        A[4] = parseInt(A4.value);
+        A[5] = parseInt(A5.value);
+        A[6] = parseInt(A6.value);
+        A[7] = parseInt(A7.value);
+        A[8] = parseInt(A8.value);
+        A[9] = parseInt(A9.value);
+        for (let index = 0; index < A.length; index++) {
+            AOld[index] = A[index];
+            
+        }
+    }
+    function Random() {
+        A0.value = Math.floor(Math.random() * 101);
+        A1.value = Math.floor(Math.random() * 101);
+        A2.value = Math.floor(Math.random() * 101);
+        A3.value = Math.floor(Math.random() * 101);
+        A4.value = Math.floor(Math.random() * 101);
+        A5.value = Math.floor(Math.random() * 101);
+        A6.value = Math.floor(Math.random() * 101);
+        A7.value = Math.floor(Math.random() * 101);
+        A8.value = Math.floor(Math.random() * 101);
+        A9.value = Math.floor(Math.random() * 101);
+    }
+    function cal() {
+        readTable();
+
+        Sc = [0, 0, 0, 0, 0];
+        for (var i = 0; i < 10; i++) {
+            if (A[i] == 100) {
+                A[i] = 99;
+                allStep[stepCount] = "A[" + i + "]=" + A[i] + "  (避免100放不進陣列)\n";
+                storeArr[stepCount] = 2;
+                stepCount++;
+            }
+            if (A[i] - 50 < 0) {
+                A[i] = 50;
+                allStep[stepCount] = "A[" + i + "]=" + A[i] + "  (避免不及格者分數變負的)\n";
+                storeArr[stepCount] = 3;
+                stepCount++;
+            }
+            ScIn[i] = Math.floor((A[i] - 50) / 10);
+            Sc[ScIn[i]]++;
+            allStep[stepCount] = "Sc[" + ScIn[i] + "]=" + Sc[ScIn[i]] + "  (將A[" + i + "]的值所在的區間，放入Sc[" + i + "])\n";
+            storeArr[stepCount] = 1;
+            stepCount++;
+        }
+        allStep[stepCount] = "程式結束。\n";
+        for (var index = 0; index < Sc.length; index++) {
+            allStep[stepCount] += "Sc["+index+"]="+Sc[index]+" ";
+        }
+        storeArr[stepCount] = 4;
+        Sc = [0, 0, 0, 0, 0];
+    }
+
+    function drawCode() {
+        canvasCode.fillStyle = "black";
+        canvasCode.font = "18px Verdana";
+        canvasCode.fillText("for(int i=0;i<10;i++)", 20, 20);
+        canvasCode.fillText("{", 20, 40);
+        canvasCode.fillText('if(A[i]==100)', 50, 60);
+        canvasCode.fillText('{', 50, 80);
+        canvasCode.fillText('A[i]=99;', 80, 100);
+        canvasCode.fillText("}", 50, 120);
+        canvasCode.fillText('if(A[i]<50)', 50, 140);
+        canvasCode.fillText('{', 50, 160);
+        canvasCode.fillText('A[i]=50;', 80, 180);
+        canvasCode.fillText("}", 50, 200);
+        canvasCode.fillText('Sc[(A[i]-50)/10]++;', 50, 220);
+        canvasCode.fillText('}', 20, 240);
+    }
+    function drawChart() {
+        canvasChart.globalCompositeOperation = "destination-over";
+        canvasChart.fillStyle = "#F7E9E7";
+        canvasChart.fillRect(75, 45, 850, 40);
+        canvasChart.strokeStyle = "#D34817";
+        canvasChart.fillStyle = "#D34817";
+        canvasChart.strokeRect(75, 45, 850, 40);
+
+        canvasChart.globalCompositeOperation = "source-over";
+        canvasChart.beginPath();
+        canvasChart.moveTo(160, 45);
+        canvasChart.lineTo(160, 85);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(245, 45);
+        canvasChart.lineTo(245, 85);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(330, 45);
+        canvasChart.lineTo(330, 85);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(415, 45);
+        canvasChart.lineTo(415, 85);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(500, 45);
+        canvasChart.lineTo(500, 85);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(585, 45);
+        canvasChart.lineTo(585, 85);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(670, 45);
+        canvasChart.lineTo(670, 85);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(755, 45);
+        canvasChart.lineTo(755, 85);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(840, 45);
+        canvasChart.lineTo(840, 85);
+        canvasChart.stroke(); //第一個表格
+
+        canvasChart.fillStyle = "black";
+        canvasChart.font = '25px "微軟正黑體"';
+        canvasChart.fillText('A[0]', 80, 30);
+        canvasChart.fillText('A[1]', 165, 30);
+        canvasChart.fillText('A[2]', 250, 30);
+        canvasChart.fillText('A[3]', 335, 30);
+        canvasChart.fillText('A[4]', 420, 30);
+        canvasChart.fillText('A[5]', 505, 30);
+        canvasChart.fillText('A[6]', 590, 30);
+        canvasChart.fillText('A[7]', 675, 30);
+        canvasChart.fillText('A[8]', 760, 30);
+        canvasChart.fillText('A[9]', 845, 30);
+
+
+        canvasChart.globalCompositeOperation = "destination-over";
+        canvasChart.fillStyle = "#F7E9E7";
+        canvasChart.fillRect(287.5, 195, 425, 40);
+        canvasChart.strokeStyle = "#D34817";
+        canvasChart.fillStyle = "#D34817";
+        canvasChart.strokeRect(287.5, 195, 425, 40);
+
+        canvasChart.globalCompositeOperation = "source-over";
+        canvasChart.beginPath();
+        canvasChart.moveTo(372.5, 195);
+        canvasChart.lineTo(372.5, 235);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(457.5, 195);
+        canvasChart.lineTo(457.5, 235);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(542.5, 195);
+        canvasChart.lineTo(542.5, 235);
+        canvasChart.stroke();
+
+        canvasChart.beginPath();
+        canvasChart.moveTo(627.5, 195);
+        canvasChart.lineTo(627.5, 235);
+        canvasChart.stroke();//第二個表格
+
+        canvasChart.fillStyle = "black";
+        canvasChart.font = '25px "微軟正黑體"';
+        canvasChart.fillText('Sc[0]', 292.5, 180);
+        canvasChart.fillText('Sc[1]', 377.5, 180);
+        canvasChart.fillText('Sc[2]', 462.5, 180);
+        canvasChart.fillText('Sc[3]', 547.5, 180);
+        canvasChart.fillText('Sc[4]', 632.5, 180);
+    }
+    function fillCode(i) {
+        canvasCode.fillStyle = "#FFFFFF";
+        canvasCode.clearRect(0, 0, 550, 250);
+        canvasCode.fillStyle = "khaki";
+
+        if (storeArr[i] == 1) {
+            canvasCode.fillRect(0, 205, 550, 20);
+        }
+        else if (storeArr[i] == 2) {
+            canvasCode.fillRect(0, 85, 550, 20);
+            arrCount--;
+        }
+        else if (storeArr[i] == 3) {
+            canvasCode.fillRect(0, 165, 550, 20);
+            arrCount--;
+        }
+    }
+    function fillChart(i) {
+        canvasChart.fillStyle = "#FFFFFF";
+        canvasChart.clearRect(0, 0, 1000, 300);
+        if (storeArr[i] == 2 || storeArr[i] == 3) {
+            AOld[arrCount] = A[arrCount];
+        }
+        for (var index = 0; index < 10; index++) {
+            if (index == arrCount) {
+                canvasChart.fillStyle = "red";
+            }
+            else {
+                canvasChart.fillStyle = "black";
+            }
+            canvasChart.fillText(AOld[index], 85 + index * 85, 75);
+        }
+        for (var index = 0; index < 5; index++) {
+            if (ScIn[arrCount] == index) {
+                canvasChart.fillStyle = "red";
+                if (storeArr[i] == 1) {
+                    Sc[ScIn[arrCount]]++;
+                }
+            }
+            else {
+                canvasChart.fillStyle = "black";
+            }
+            canvasChart.fillText(Sc[index], 292.5 + index * 85, 225);
+        }
+        if (storeArr[i] == 1 || storeArr[i] == 2 || storeArr[i] == 3) {
+            arrCount++;
+        }
+    }
+</script>
+
+</html>

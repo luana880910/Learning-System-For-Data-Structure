@@ -1,0 +1,82 @@
+﻿<html>
+
+<head>
+  <link rel="stylesheet" href="css/basic.css">
+</head>
+
+<script language=javascript src='js/question.js'>
+</script>
+<script language=javascript src='js/two_tier.js'>
+</script>
+
+<body onload="shprob();">
+  <b class="title">二階層測驗</b>
+  <div class="body-container">
+    <hr>
+    <table border>
+      <tr>
+        <td>
+          <span class="subtitle">
+            題目</span><br>
+          <span id='voc'></span>
+          <br>
+          <div class="radiobuttons">
+            <div class="inputGroup">
+              <input type=radio class="option-input radio" name=q1 onclick='cans=1;' id='s1'><span
+                id='item1'></span><br>
+            </div>
+            <div class="inputGroup">
+              <input type=radio class="option-input radio" name=q1 onclick='cans=2;' id='s2'><span
+                id='item2'></span><br>
+            </div>
+            <div class="inputGroup">
+              <input type=radio class="option-input radio" name=q1 onclick='cans=3;' id='s3'><span
+                id='item3'></span><br>
+            </div>
+            <div class="inputGroup">
+              <input type=radio class="option-input radio" name=q1 onclick='cans=4;' id='s4'><span
+                id='item4'></span><br>
+            </div>
+          </div><br>
+          <span class="buttoncontainer">
+            <button class="cbutton" onclick="check();" id='c1'>Check</button>
+          </span>
+        </td>
+        <td>
+          <div id='secondquest' style='display: none;'>
+            <span class="subtitle" id='secq'>
+              題目</span>
+            <br>
+            <div class="radiobuttons">
+              <div class="inputGroup">
+                <input type=radio class="option-input radio" name=q2 onclick='cans2=1;' id='t1'><span
+                  id='sitem1'></span><br>
+              </div>
+              <div class="inputGroup">
+                <input type=radio class="option-input radio" name=q2 onclick='cans2=2;' id='t2'><span
+                  id='sitem2'></span><br>
+              </div>
+              <div class="inputGroup">
+                <input type=radio class="option-input radio" name=q2 onclick='cans2=3;' id='t3'><span
+                  id='sitem3'></span><br>
+              </div>
+              <div class="inputGroup">
+                <input type=radio class="option-input radio" name=q2 onclick='cans2=4;' id='t4'><span
+                  id='sitem4'></span><br>
+              </div>
+            </div><br>
+            <span class="buttoncontainer">
+              <button class="cbutton" onclick="check2();">Check</button>
+            </span>
+          </div>
+        </td>
+    </table>
+  </div>
+  <hr>
+  <span class="timer">
+    得分:<span id='score'>0</span>分
+  </span>
+  <span id='show1'> </span>
+</body>
+
+</html>

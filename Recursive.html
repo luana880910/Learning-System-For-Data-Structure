@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>animation</title>
+	<style>
+		#canvas1 {
+			border: 5px blue solid;
+		}
+
+		#outer {
+			margin-right: 30px;
+			margin-top: 20px;
+			float: left;
+		}
+
+		#outer2 {
+			margin-right: 30px;
+			margin-top: 20px;
+			float: right;
+		}
+
+		#outer3 {
+			margin-right: 30px;
+			margin-top: 20px;
+			width: 410px;
+			height: 310px;
+			float: left;
+		}
+
+		#outer4 {
+			margin-right: 30px;
+			margin-top: 20px;
+			position: absolute;
+			bottom: 0;
+		}
+	</style>
+</head>
+<script>
+	var second = 0;
+	var stayTime, beforeTime;
+</script>
+
+<body>
+	<div id="outer">
+		<table style="border:solid thin;">
+			<tr>
+				<td>變數</td>
+				<td>M</td>
+				<td>N</td>
+			</tr>
+			<tr>
+				<td>值</td>
+				<td><input style="width:45px" type="number" id="input0"></td>
+				<td><input style="width:45px" type="number" id="input1"></td>
+			</tr>
+		</table>
+		產生數值:
+		<br>
+		<button onclick="input();" id="input">Input</button>
+		<button onclick="random();" id="random">Random</button>
+		<br>
+		舉例
+		<br>
+		<button onclick="step();" id="step">Step</button>
+		<br>
+		<button onclick="ani();" id="anime">Animation</button>
+		<form id="choose_speed">
+			<input type="radio" name="speed" value=0>慢
+			<input type="radio" name="speed" value=1>中
+			<input type="radio" name="speed" value=2>快
+		</form>
+		<br>
+		<button onclick="ani(0);" id="all">Run All</button>
+		<br>
+		<button onclick="reset();" id="Next">Reset</button>
+	</div>
+
+	<canvas id="showCode" width="600" height="300">
+		This text is displayed if your browser does not support HTML5 Canvas.
+	</canvas>
+
+	<div id="outer2">
+		<canvas id="showWord" width="400" height="100">
+			This text is displayed if your browser does not support HTML5 Canvas.
+		</canvas>
+		<br>
+		<canvas id="showChart" width="400" height="700">
+			This text is displayed if your browser does not support HTML5 Canvas.
+		</canvas>
+	</div>
+
+
+	<div id="outer3" width="320" height="240">
+		目前步驟解說:
+		<br>
+		<textarea cols="100" rows="4" readonly="readonly" id="current"></textarea>
+		<br>
+		所有過程：
+		<br>
+		<textarea cols="100" rows="16" readonly="readonly" id="Result"></textarea>
+	</div>
+	<script>
+		var A0 = document.getElementById("input0");
+		var A1 = document.getElementById("input1");
+		var example = [];
+		var A = [];
+		example[0] = "int demoD(int M,int N){\n";
+		example[1] = "	int Result;\n";
+		example[2] = "	if ( N == 1)\n";
+		example[3] = "		Result = M;\n";
+		example[4] = "	else Result = M + demoD(M,N-1);\n";
+		example[5] = "return Result;}";
+		var codePos = [];
+		codePos[0] = 50;
+		codePos[1] = 80;
+		codePos[2] = 80;
+		codePos[3] = 110;
+		codePos[4] = 80;
+		codePos[5] = 50;
+		var skyx = 50;  // x coord to slice sky image
+		var skyy = 30; //y coord to slice sky image
+		var flag = 0;//目前行數
+		var sp = 0;
+		var flag2 = 0;
+		var canvas = document.getElementById('showCode');
+		var code = canvas.getContext("2d");
+
+		var canvas1 = document.getElementById('showWord');
+		var word = canvas1.getContext("2d");
+
+		var canvas2 = document.getElementById('showChart');
+		var chart = canvas2.getContext("2d");
+
+		var sum = 0, recure = 0;
+		var timeout, timeout2, timeout3;
+		var chspeed = document.getElementById("choose_speed");
+
+		window.onload = function () {
+			document.getElementById("step").disabled = true;
+			document.getElementById("anime").disabled = true;
+			document.getElementById("all").disabled = true;
+			drawCode();
+			beforeTime = localStorage.getItem("stayTime");
+			stayTime = setInterval(time, 1000);
+		}
+
+		function time() {
+			second++;
+			localStorage.setItem("stayTime", beforeTime + "@學習系統-遞迴 停留時間：" + second + "\n");
+		}
+
+		function input() {
+			if (A0.value == "" || A1.value == "") {
+				alert("請輸入變數值");
+				return;
+			}
+			if (A0.value < 1 || A1.value < 1) {
+				alert("請輸入正整數");
+				return;
+			}
+			A[0] = A0.value;
+			A[1] = A1.value;
+			document.getElementById("input").disabled = true;
+			document.getElementById("step").disabled = false;
+			document.getElementById("anime").disabled = false;
+			document.getElementById("all").disabled = false;
+			document.getElementById("random").disabled = true;
+			caculate();
+			generate();
+		}
+
+		function random() {
+			A0.value = Math.floor((Math.random() * 20) + 1);
+			A1.value = Math.floor((Math.random() * 10) + 1);
+		}
+
+		function draw() {
+			word.globalCompositeOperation = 'copy';
+			word.font = '18px serif';
+			word.fillText("demoD(" + A[0] + "," + (A[1]) + ")", skyx, skyy);
+			if (skyx >= 50) {
+				chart.moveTo(100, 0 + (A[1] - 1) * 100);
+				chart.lineTo(100, 75 + (A[1] - 1) * 100);
+				chart.lineTo(200, 75 + (A[1] - 1) * 100);
+				chart.lineTo(190, 70 + (A[1] - 1) * 100);
+				chart.lineTo(190, 80 + (A[1] - 1) * 100);
+				chart.lineTo(200, 75 + (A[1] - 1) * 100);
+				chart.stroke();//畫Stack圖
+				setTimeout(function () {
+					drawChart();
+				}, 1);
+				clearInterval(timeout);
+			}
+		}
+
+		function drawChart() {//畫Stack圖
+			chart.fillStyle = "#ffffff";
+			chart.fillRect(50, 0, 150, 50);
+			chart.fillStyle = "black";
+			chart.font = '24px serif';
+			chart.fillText("return Result", 230, 40 + (A[1] * 2 - 1) * 50);
+			chart.fillText("demoD(" + A[0] + "," + (A[1]) + ")", 230, 40 + (A[1] - 1) * 2 * 50);
+			chart.beginPath();
+			chart.moveTo(200, 0 + (A[1] - 1) * 100);
+			chart.lineTo(200, 50 + (A[1] - 1) * 100);
+			chart.lineTo(375, 50 + (A[1] - 1) * 100);
+			chart.lineTo(375, 0 + (A[1] - 1) * 100)
+			chart.lineTo(200, 0 + (A[1] - 1) * 100);
+			chart.stroke();
+			chart.beginPath();
+			chart.moveTo(200, 50 + (A[1] - 1) * 100);
+			chart.lineTo(200, 100 + (A[1] - 1) * 100);
+			chart.lineTo(375, 100 + (A[1] - 1) * 100);
+			chart.lineTo(375, 50 + (A[1] - 1) * 100);
+			chart.lineTo(200, 50 + (A[1] - 1) * 100);
+			chart.stroke();
+		}
+
+		function drawRecursive() {
+			chart.fillStyle = "#ffffff";
+			chart.fillRect(0, 0 + flag2 * 50, 400, 50);
+			flag2++;
+			if (A[1] % 2 != 0) {
+				word.globalCompositeOperation = 'copy';
+				word.font = '18px serif';
+				word.fillText("從stack移除:demoD(" + A[0] + "," + Math.round(A[1] / 2) + ")", skyx, skyy);
+			} else {
+				word.globalCompositeOperation = 'copy';
+				word.font = '18px serif';
+				word.fillText("回傳:demoD(" + A[0] + "," + Math.round(A[1] / 2) + ")", skyx, skyy);
+			}
+		}
+
+		function drawCode() {//畫出程式碼
+			code.fillStyle = "black";
+			code.font = "18px Verdana";
+			code.fillText(example[0], 50, 20);
+			code.fillText(example[1], 80, 40);
+			code.fillText(example[2], 80, 60);
+			code.fillText(example[3], 110, 80);
+			code.fillText(example[4], 80, 100);
+			code.fillText(example[5], 50, 120);
+		}
+
+		function ani(i) {//自動執行step
+			if (i == 0) {
+				sp = 52;
+			} else {
+				clearInterval(timeout2);
+				flag = 0;
+				if (chspeed.speed[0].checked) sp = 4000;
+				else if (chspeed.speed[1].checked) sp = 2000;
+				else if (chspeed.speed[2].checked) sp = 1000;
+				else {
+					alert("未選擇速度");
+					return;
+				}
+			}
+			document.getElementById("step").disabled = true;
+			document.getElementById("all").disabled = true;
+			timeout2 = setInterval(step, sp);
+		}
+
+		function step() {
+			if (flag == 6) {
+				clearInterval(timeout2);
+				current.value = "結果為" + sum + "\n"; //顯示過程
+				Result.value += "結果為" + sum + "\n";
+				sum += parseInt(A[0]);
+				drawRecursive();
+				chart.fillStyle = "black";
+				chart.font = "18px Verdana";
+				chart.fillText("執行結束", 50, 120);
+				document.getElementById("step").disabled = true;
+			} else {
+				caculate();
+				current.value = example[flag];//顯示過程
+				Result.value += example[flag];
+				document.getElementById("anime").disabled = true;
+				document.getElementById("all").disabled = true;
+				fillCode(flag);
+
+				if (flag == 2 && A[1] != 1) {
+					flag += 2;
+					current.value = "N為" + A[1] + "，N!=1，跳至else程式碼\n";//顯示過程
+					Result.value += "N為" + A[1] + "，N!=1，跳至else程式碼\n";//顯示過程
+				}
+
+				if (flag == 4) {
+					if (recure == 0) {
+						chart.beginPath();
+						chart.moveTo(100, 0);
+						timeout = setInterval(draw, 1);
+						current.value = example[flag];//顯示過程
+						Result.value += example[flag];
+						fillCode(flag);
+						flag = -1;
+						A[1]--;
+					} else {
+						current.value = "demoD(" + A[0] + "," + (A[1] - 1) + ")=" + sum + ",得Result = " + A[0] + " + " + sum + "\n"; //顯示過程
+						Result.value += "demoD(" + A[0] + "," + (A[1] - 1) + ")=" + sum + ",得Result = " + A[0] + " + " + sum + "\n";
+						sum += parseInt(A[0]);
+						drawRecursive();
+					}
+				}
+
+				if (flag == 3) {
+					flag++;
+					sum += parseInt(A[0]);
+				}
+
+				if (flag == 5) {
+					recure = 1;
+					if (A[1] != A1.value) {
+						current.value = "demoD(" + A[0] + "," + (A[1]) + ")回傳Result = " + sum + "\nreturn後即結束demoD(" + A[0] + "," + A[1] + "),從stack中移除\n";//顯示過程
+						Result.value += "demoD(" + A[0] + "," + (A[1]) + ")回傳Result = " + sum + "\nreturn後即結束demoD(" + A[0] + "," + A[1] + "),從stack中移除\n";
+						drawRecursive();
+						A[1]++;
+						flag = 3;
+					}
+					else {
+						A[1]++;
+					}
+				}
+				flag++;
+			}
+		}
+		function generate() {//變更程式碼
+			for (j = 0; j < 6; j++) {
+				code.fillStyle = "#ffffff";
+				code.fillRect(50, 5 + j * 20, 400, 20);
+				code.fillStyle = "black";
+				code.fillText(example[j], codePos[j], 20 * (j + 1));
+			}
+		}
+		function fillCode(i) {//顯示顏色
+			generate();
+			code.fillStyle = "khaki";
+			code.fillRect(50, 5 + i * 20, 400, 20);
+			code.fillStyle = "red";
+			code.fillText(example[i], codePos[i], 20 * (i + 1));
+		}
+
+		function reset() {
+			current.value = "";
+			Result.value = "";
+			flag = 0;
+			document.getElementById("input").disabled = false;
+			document.getElementById("random").disabled = false;
+			document.getElementById("step").disabled = true;
+			document.getElementById("anime").disabled = true;
+			document.getElementById("all").disabled = true;
+			for (j = 0; j < 6; j++) {
+				code.fillStyle = "#ffffff";
+				code.fillRect(50, 5 + j * 20, 400, 20);
+			}
+			word.fillStyle = "black";
+			word.fillText("", skyx, skyy);
+			chart.fillStyle = "#ffffff";
+			chart.fillRect(0, 0, 1000, 300);
+			sum = 0;
+			recure = 0;
+			flag2 = 0;
+			A[1]--;
+			example[0] = "int demoD(int M,int N){\n";
+			example[1] = "	int Result;\n";
+			example[2] = "	if ( N == 1)\n";
+			example[3] = "		Result = M;\n";
+			example[4] = "	else Result = M + demoD(M,N-1);\n";
+			example[5] = "return Result;}";
+			clearInterval(timeout2);
+			drawCode();
+		}
+		function caculate() {
+			example[0] = "int demoD(int " + A[0] + ",int " + A[1] + "){\n";
+			example[1] = "	int Result;\n";
+			example[2] = "	if ( N == 1)\n";
+			example[3] = "		Result = " + A[0] + ";\n";
+			example[4] = "	else Result = " + A[0] + " + demoD(" + A[0] + "," + (A[1] - 1) + ");\n";
+			example[5] = "return " + sum + "}\n";
+		}
+	</script>
+
+</body>
+
+</html>

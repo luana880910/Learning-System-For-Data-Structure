@@ -1,0 +1,92 @@
+﻿<html>
+
+<head>
+    <link rel="stylesheet" href="css/drop-down-menu.css">
+    <script src="js/main.js"></script>
+</head>
+
+<body>
+
+    <div class="main"></div>
+    <div class="blank"></div>
+    <div class="menu">
+        <ul class="drop-down-menu">
+            <li><a href="#">模擬</a>
+                <ul>
+                    <li><a href="#">分支</a>
+                        <ul>
+                            <li><a href="#" onclick="changePage(0);">if else</a>
+                            </li>
+                            <li><a href="#" onclick="changePage(1);">switch</a>
+                            </li>
+                            <li><a href="#" onclick="changePage(2);">?:</a>
+                            </li>
+                            <li><a href="#" onclick="changePage(3);">巢狀迴圈</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#">迴圈</a>
+                        <ul>
+                            <li><a href="#" onclick="changePage(4);">for</a>
+                            </li>
+                            <li><a href="#" onclick="changePage(5);">while</a>
+                            </li>
+                            <li><a href="#" onclick="changePage(6);">do_while</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#" onclick="changePage(7);">遞迴</a>
+                    </li>
+                    <li><a href="#" onclick="changePage(8);">邏輯判斷</a>
+                    </li>
+                    <li><a href="#">陣列</a>
+                        <ul>
+                            <li><a href="#" onclick="changePage(9);">教學</a>
+                            </li>
+                            <li><a href="#" onclick="changePage(10);">實例</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#" onclick="changePage(11);">函數</a>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="#">測驗</a>
+                <ul>
+                    <li><a href="#">限時測驗</a>
+                        <ul>
+                            <li><a href="#" onclick="changePage(12);">分支與巢狀</a>
+                            </li>
+                            <li><a href="#" onclick="changePage(13);">迴圈與陣列</a>
+                            </li>
+                            <li><a href="#" onclick="changePage(14);">遞迴與函數</a>
+                            </li>
+                        </ul>
+                    <li><a href="#" onclick="changePage(15);">動態評量</a>
+                    </li>
+                    </li>
+                    <li><a href="#" onclick="changePage(16);">二階測驗</a>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="#" >回饋</a>
+                <ul>
+                    <li><a href=" #" onclick="changePage(17);">學習診斷</a>
+                    </li>
+                    <li><a href=" #" onclick="changePage(18);">我的足跡</a>
+                    </li>
+                    <li><a href=" #" onclick="changePage(19);">作者介面</a>
+                    </li>
+                </ul>
+            </li>
+            <li><a href="login.html" onclick="return confirm('確定要登出嗎?')">登出</a>
+            </li>
+        </ul>
+    </div>
+    <div class="frame">
+        <iframe src="" id="mainframe"
+            style="border:0; left:0; right:0; bottom:0; width:100%; height:80%">?</iframe>
+    </div>
+</body>
+
+</html>

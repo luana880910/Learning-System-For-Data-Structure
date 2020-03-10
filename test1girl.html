@@ -1,0 +1,93 @@
+﻿<html>
+
+<head>
+    <link rel="stylesheet" href="css/basic.css">
+</head>
+<script language=javascript src='js/question.js'>
+</script>
+<script language=javascript src='js/test1girl.js'>
+</script>
+
+<body onload='timeCount1();ranQ();'>
+    <b class="title">限時測驗-迴圈與陣列</b>
+    <hr>
+    <div class="body-container">
+        <span class="subtitle">
+            題目</span>
+        <br>
+        <span id=prob1> </span><br>
+        <div class="radiobuttons">
+            <div class="inputGroup">
+
+                <input type="checkbox" class="option-input checked" id="cbox0" onclick='Bcheck = 0'><span
+                    class="radioSpan" id=s0>0</span class="radioSpan"> <br>
+            </div>
+            <div class="inputGroup">
+                <input type="checkbox" class="option-input checked" id="cbox1" onclick='Bcheck = 1'><span
+                    class="radioSpan" id=s1>1</span class="radioSpan"> <br>
+            </div>
+            <div class="inputGroup">
+                <input type="checkbox" class="option-input checked" id="cbox2" onclick='Bcheck = 2'><span
+                    class="radioSpan" id=s2>2</span class="radioSpan"> <br>
+            </div>
+            <div class="inputGroup">
+                <input type="checkbox" class="option-input checked" id="cbox3" onclick='Bcheck = 3'><span
+                    class="radioSpan" id=s3>3</span class="radioSpan"> <br>
+            </div>
+        </div><br>
+        <span class="buttoncontainer">
+            <button onclick="freply(Bcheck);check();" class="cbutton" id="button1">Check</button></span>
+        <br>
+        <canvas id="canvasChart" width="50" height="50">
+            This text is displayed if your browser does not support HTML5 Canvas.
+        </canvas>
+    </div>
+
+    <hr>
+    <br>
+    <span class="timer">
+        得分：<span id=sc class="sc">0</span>分
+        &emsp;
+        剩餘秒數：<span id=time class="ti">60</span>秒
+    </span>
+
+    <script>
+        var canvas1 = document.getElementById('canvasChart');
+        var canvasChart = canvas1.getContext('2d');
+        function drawChart() {
+            if (judge == 1) {
+                canvasChart.clearRect(0, 0, 50, 50);
+                canvasChart.fillStyle = "#008866";
+                var circle1 = new Path2D();
+                canvasChart.beginPath();
+                circle1.arc(25, 25, 20, 0 * Math.PI, 2 * Math.PI);
+                canvasChart.fill(circle1);//畫第一個圓圈
+                canvasChart.fillStyle = "#FFFFFF";
+                var circle1 = new Path2D();
+                canvasChart.beginPath();
+                circle1.arc(25, 25, 13, 0 * Math.PI, 2 * Math.PI);
+                canvasChart.fill(circle1);//畫第二個圓圈
+            }
+            else {
+                canvasChart.clearRect(0, 0, 50, 50);
+                canvasChart.fillStyle = "#A42D00";
+                canvasChart.beginPath();
+                canvasChart.moveTo(6, 12);
+                canvasChart.lineTo(12, 6);
+                canvasChart.lineTo(44, 38);
+                canvasChart.lineTo(38, 44);
+                canvasChart.fill();//畫X的\
+
+                canvasChart.beginPath();
+                canvasChart.moveTo(38, 6);
+                canvasChart.lineTo(44, 12);
+                canvasChart.lineTo(12, 44);
+                canvasChart.lineTo(6, 38);
+                canvasChart.fill();//畫X的/
+            }
+        }
+    </script>
+
+</body>
+
+</html>

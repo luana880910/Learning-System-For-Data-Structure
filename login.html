@@ -1,0 +1,66 @@
+<html>
+
+<head>
+	<link rel="stylesheet" href="css/login.css">
+</head>
+<script>
+	function input() {
+		var inputNo = document.getElementById('userNo').value;
+		var inputName = document.getElementById('userName').value;
+		if (inputNo == "" || inputName == "") {
+			alert("學號姓氏不得為空");
+			return;
+		}
+		else {
+			localStorage.clear();
+			localStorage.setItem('No', inputNo);
+			localStorage.setItem('Name', inputName);
+			/*localStorage.setItem("test1boyWrongStr","");
+			localStorage.setItem("test1girlWrongStr","");
+			localStorage.setItem("test_timeWrongStr","");
+			localStorage.setItem("test2WrongStr","");
+			localStorage.setItem("two_tierWrongStr","");
+			localStorage.setItem("test1boySc",null);
+			localStorage.setItem("test1girlSc",null);
+			localStorage.setItem("test_timeSc",null);
+			localStorage.setItem("test2Sc",null);
+			localStorage.setItem("two_tierSc",null);
+			localStorage.setItem("stayTime","網頁時間紀錄");*/
+			window.location = "index.html";
+		}
+	}
+</script>
+
+<body>
+	<center>
+		<br><br><br><br><br><br><br><br>
+		<div class="container">
+
+			<p class="label">學號</p><br>
+			<center>
+				<div class="input-group">
+					<input type='text' id='userNo'>
+					<span class="bottom"></span>
+					<span class="right"></span>
+					<span class="top"></span>
+					<span class="left"></span>
+				</div>
+				<br><br>
+			</center>
+			<center>
+				<p class="label">姓氏</p><br>
+				<div class="input-group">
+					<input type='text' id='userName'>
+					<span class="bottom"></span>
+					<span class="right"></span>
+					<span class="top"></span>
+					<span class="left"></span>
+				</div>
+				<br><br>
+			</center>
+			<button onclick='input();' class="loginButton">登入</button>
+		</div>
+	</center>
+</body>
+
+</html>

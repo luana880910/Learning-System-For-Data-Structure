@@ -1,0 +1,264 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>logical</title>
+    <style>
+        #Pos {
+            margin-top: 20;
+            margin-left: 40;
+            float: left;
+        }
+
+        #Pos2 {
+            margin-top: 40;
+            margin-left: 40;
+
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 370;
+            /*自動斷行*/
+            word-wrap: break-word;
+            table-layout: fixed;
+        }
+    </style>
+</head>
+<script>
+
+    var second = 0;
+    var stayTime, beforeTime;
+    window.onload = function timeCount() {
+        beforeTime = localStorage.getItem("stayTime");
+        stayTime = setInterval(time, 1000);
+        drawCode1();
+    }
+    function time() {
+        second++;
+        localStorage.setItem("stayTime", beforeTime + "@學習系統-邏輯運算 停留時間：" + second + "\n");
+    }
+
+</script>
+
+<body>
+    <div id="Pos">
+        <div id="Pos">
+            <br>
+            轉換模式：
+            <input type="radio" id="mode1" name="mode" onclick="mode = 1;"> AND轉OR
+            <input type="radio" id="mode2" name="mode" onclick="mode = 2;"> OR轉AND
+            <input type="radio" id="mode3" name="mode" onclick="mode = 3;"> 只加!轉換
+            <input type="checkbox" onclick="F = 1;"> 是否加!
+            <br><br>
+            <button id="trans" onclick="trans();" style="width:50;height:30;font-size:15;">轉換</button>
+        </div>
+        <br><br><br><br><br><br><br><br>
+        <div id="Pos2">
+            <h2>比較運算子</h2>
+            <table border="2" id="tb1">
+                <tr>
+                    <td>運算子</td>
+                    <td>範例</td>
+                    <td>說明</td>
+                </tr>
+                <tr>
+                    <td>==</td>
+                    <td>a = b</td>
+                    <td>a等於b</td>
+                </tr>
+                <tr>
+                    <td>!=</td>
+                    <td>a != b</td>
+                    <td>a不等於b</td>
+                </tr>
+                <tr>
+                    <td>></td>
+                    <td>a > b</td>
+                    <td>a大於b</td>
+                </tr>
+                <tr>
+                    <td>>=</td>
+                    <td>a >= b</td>
+                    <td>a大於等於b</td>
+                </tr>
+                <tr>
+                    <td>
+                        <</td> <td>a < b</td> <td>a小於b
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <=</td> <td>a <= b</td> <td>a小於等於b
+                    </td>
+                </tr>
+            </table>
+            <h2>邏輯運算子</h2>
+            <table border="2" id="tb2">
+                <tr>
+                    <td>運算子</td>
+                    <td>範例</td>
+                    <td>說明</td>
+                </tr>
+                <tr>
+                    <td>&&</td>
+                    <td>a == b&& b == c</td>
+                    <td>a等於b且b等於c</td>
+                </tr>
+                <tr>
+                    <td>||</td>
+                    <td>a == b || a == c</td>
+                    <td>a等於b或a等於c</td>
+                </tr>
+                <tr>
+                    <td>!</td>
+                    <td>!a</td>
+                    <td>a不為true</td>
+                </tr>
+            </table>
+        </div>
+        <div id="Pos">
+            <canvas id="showCode" width="360" height="200">
+                This text is displayed if your browser does not support HTML5 Canvas.
+            </canvas>
+        </div>
+    </div>
+</body>
+<script>
+    var mode = F = 0;
+    var image = 1;
+    var code = document.getElementById('showCode').getContext("2d");
+
+    function drawCode1() {
+        image = 1;
+        code.clearRect(0, 0, 360, 200);
+        code.fillStyle = "black";
+        code.font = "18px Verdana";
+        code.fillText("if (bmi >= 18.5 && bmi < 24)", 0, 40);
+        code.fillText("{", 0, 60);
+        code.fillText('System.out.println("體重正常");', 30, 80);
+        code.fillText("}", 0, 100);
+        code.fillText("else", 0, 120);
+        code.fillText("{", 0, 140);
+        code.fillText('System.out.println("體重不正常");', 30, 160);
+        code.fillText("}", 0, 180);
+    }
+
+    function drawCode2() {
+        image = 2;
+        code.clearRect(0, 0, 360, 200);
+        code.fillStyle = "black";
+        code.font = "18px Verdana";
+        code.fillText("if (!(bmi < 18.5 || bmi >= 24))", 0, 40);
+        code.fillText("{", 0, 60);
+        code.fillText('System.out.println("體重正常");', 30, 80);
+        code.fillText("}", 0, 100);
+        code.fillText("else", 0, 120);
+        code.fillText("{", 0, 140);
+        code.fillText('System.out.println("體重不正常)";', 30, 160);
+        code.fillText("}", 0, 180);
+    }
+
+    function drawCode3() {
+        image = 3;
+        code.clearRect(0, 0, 360, 200);
+        code.fillStyle = "black";
+        code.font = "18px Verdana";
+        code.fillText("if (bmi < 18.5 || bmi >= 24)", 0, 40);
+        code.fillText("{", 0, 60);
+        code.fillText('System.out.println("體重不正常");', 30, 80);
+        code.fillText("}", 0, 100);
+        code.fillText("else", 0, 120);
+        code.fillText("{", 0, 140);
+        code.fillText('System.out.println("體重正常");', 30, 160);
+        code.fillText("}", 0, 180);
+    }
+
+    function drawCode4() {
+        image = 4;
+        code.clearRect(0, 0, 360, 200);
+        code.fillStyle = "black";
+        code.font = "18px Verdana";
+        code.fillText("if ((!(bmi < 18.5)) && (!(bmi >= 24)))", 0, 40);
+        code.fillText("{", 0, 60);
+        code.fillText('System.out.println("體重正常");', 30, 80);
+        code.fillText("}", 0, 100);
+        code.fillText("else", 0, 120);
+        code.fillText("{", 0, 140);
+        code.fillText('System.out.println("體重不正常");', 30, 160);
+        code.fillText("}", 0, 180);
+    }
+
+    function trans() {
+
+        if (mode == 0) {
+            alert("請至少選取一項內容");
+            return;
+        }
+
+        if (image == 1) {
+            if (mode == 1) {
+                if (F == 1)
+                    drawCode2();
+                else
+                    drawCode3();
+            }
+            else if (mode == 2) {
+                alert("無法轉換");
+                return;
+            }
+            else if (mode == 3)
+                drawCode4();
+        }
+
+        else if (image == 2) {
+            if (mode == 1) {
+                alert("無法轉換");
+                return;
+            }
+            else if (mode == 2) {
+                if (F == 1)
+                    drawCode1();
+                else
+                    drawCode4();
+            }
+            else if (mode == 3)
+                drawCode3();
+        }
+
+        else if (image == 3) {
+            if (mode == 1) {
+                alert("無法轉換");
+                return;
+            }
+            else if (mode == 2) {
+                if (F == 1)
+                    drawCode4();
+                else
+                    drawCode1();
+            }
+            else if (mode == 3)
+                drawCode2();
+        }
+
+        else if (image == 4) {
+            if (mode == 1) {
+                if (F == 1)
+                    drawCode3();
+                else
+                    drawCode2();
+            }
+            else if (mode == 2) {
+                alert("無法轉換");
+                return;
+            }
+            else if (mode == 3)
+                drawCode1();
+
+        }
+
+    }
+
+</script>
+
+</html>

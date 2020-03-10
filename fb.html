@@ -1,0 +1,146 @@
+<html>
+<body onload='SC();'>
+    <div ALIGN='center'>
+        限時測驗-分支與巢狀<span id="s0">0</span>/150分<button id="b0" onclick="test1boyws();">詳情</button><br>
+        <table><tr><td ALIGN=left><span id="w0"></span></td></tr></table><br>
+        限時測驗-迴圈與陣列<span id="s1">0</span>/150分<button id="b1" onclick="test1girlws();">詳情</button id="b0"><br>
+        <table><tr><td ALIGN=left><span id="w1"></span></td></tr></table><br>
+        限時測驗-遞迴與函數<span id="s2">0</span>/100分<button id="b2" onclick="test_timews();">詳情</button id="b0"><br>
+        <table><tr><td ALIGN=left><span id="w2"></span></td></tr></table><br>
+        動態評量<span id="s3">0</span>/100分<button id="b3" onclick="test2ws();">詳情</button id="b0"><br>
+        <table><tr><td ALIGN=left><span id="w3"></span></td></tr></table><br>
+        二階測驗<span id="s4">0</span>/100分<button id="b4" onclick="two_tierws();">詳情</button id="b0"><br>
+        <table><tr><td ALIGN=left><span id="w4"></span></td></tr></table><br>
+    </div>
+</body>
+<script>
+    var test1boyWS = localStorage.getItem("test1boyWrongStr");
+    var test1girlWS = localStorage.getItem("test1girlWrongStr");
+    var test_timeWS = localStorage.getItem("test_timeWrongStr");
+    var test2WS = localStorage.getItem("test2WrongStr");
+    var two_tierWS = localStorage.getItem("two_tierWrongStr");
+    var sc = [];
+    sc[0] = localStorage.getItem("test1boySc");
+    sc[1] = localStorage.getItem("test1girlSc");
+    sc[2] = localStorage.getItem("test_timeSc");
+    sc[3] = localStorage.getItem("test2Sc");
+    sc[4] = localStorage.getItem("two_tierSc");
+    var judge = [];
+    judge[0] = 0;
+    judge[1] = 0;
+    judge[2] = 0;
+    judge[3] = 0;
+    judge[4] = 0;
+    function SC() {
+        for (let index = 0; index < 5; index++) {
+            if (sc[index] == null) {
+                document.getElementById('s' + index).innerHTML = 0;
+            }
+            else {
+                document.getElementById('s' + index).innerHTML = sc[index];
+            }
+        }
+    }
+    function test1boyws() {
+        if (judge[0] == 1) {
+            document.getElementById('w0').innerHTML = "";
+            document.getElementById('b0').innerHTML = "詳情";
+            judge[0] = 0;
+        }
+        else {
+            if (sc[0] == null) {
+                document.getElementById('w0').innerHTML = "<font color=red>尚未完成測驗</font>";
+            }
+            else {
+                if (sc[0] == 150)
+                    document.getElementById('w0').innerHTML = "<font color=red>滿分，你好棒!</font>";
+                else
+                    document.getElementById('w0').innerHTML = test1boyWS;
+            }
+            judge[0] = 1;
+            document.getElementById('b0').innerHTML = "收起";
+        }
+    }
+    function test1girlws() {
+        if (judge[1] == 1) {
+            document.getElementById('w1').innerHTML = "";
+            document.getElementById('b1').innerHTML = "詳情";
+            judge[1] = 0;
+        }
+        else {
+            if (sc[1] == null) {
+                document.getElementById('w1').innerHTML = "<font color=red>尚未完成測驗</font>";
+            }
+            else {
+                if (sc[1] == 150)
+                    document.getElementById('w1').innerHTML = "<font color=red>滿分，你好棒!</font>";
+                else
+                    document.getElementById('w1').innerHTML = test1girlWS;
+            }
+            judge[1] = 1;
+            document.getElementById('b1').innerHTML = "收起";
+        }
+    }
+    function test_timews() {
+        if (judge[2] == 1) {
+            document.getElementById('w2').innerHTML = "";
+            document.getElementById('b2').innerHTML = "詳情";
+            judge[2] = 0;
+        }
+        else {
+            if (sc[2] == null) {
+                document.getElementById('w2').innerHTML = "<font color=red>尚未完成測驗</font>";
+            }
+            else {
+                if (sc[2] == 100)
+                    document.getElementById('w2').innerHTML = "<font color=red>滿分，你好棒!</font>";
+                else
+                    document.getElementById('w2').innerHTML = test_timeWS;
+            }
+            judge[2] = 1;
+            document.getElementById('b2').innerHTML = "收起";
+        }
+    }
+    function test2ws() {
+        if (judge[3] == 1) {
+            document.getElementById('w3').innerHTML = "";
+            document.getElementById('b3').innerHTML = "詳情";
+            judge[3] = 0;
+        }
+        else {
+            if (sc[3] == null) {
+                document.getElementById('w3').innerHTML = "<font color=red>尚未完成測驗</font>";
+            }
+            else {
+                if (sc[3] == 100)
+                    document.getElementById('w3').innerHTML = "<font color=red>滿分，你好棒!</font>";
+                else
+                    document.getElementById('w3').innerHTML = test2WS;
+            }
+            judge[3] = 1;
+            document.getElementById('b3').innerHTML = "收起";
+        }
+    }
+    function two_tierws() {
+        if (judge[4] == 1) {
+            document.getElementById('w4').innerHTML = "";
+            document.getElementById('b4').innerHTML = "詳情";
+            judge[4] = 0;
+        }
+        else {
+            if (sc[4] == null) {
+                document.getElementById('w4').innerHTML = "<font color=red>尚未完成測驗</font>";
+            }
+            else {
+                if (sc[4] == 100)
+                    document.getElementById('w4').innerHTML = "<font color=red>滿分，你好棒!</font>";
+                else
+                    document.getElementById('w4').innerHTML = two_tierWS;
+            }
+            judge[4] = 1;
+            document.getElementById('b4').innerHTML = "收起";
+        }
+    }
+</script>
+
+</html>

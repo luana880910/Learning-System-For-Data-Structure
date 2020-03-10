@@ -1,0 +1,85 @@
+﻿<html>
+    <head>
+        <link rel="stylesheet" href="css/basic.css">
+    </head>
+<script language=javascript src="js/test_time.js">
+</script>
+
+<body onload='start();demoA();genQ();timeCount();'>
+    <b class="title">限時測驗-遞迴</b>
+    <hr><div class="body-container">
+    <span class="subtitle">
+    題目</span>
+    <br>
+    <span id=prob1>讀取失敗</span><br>
+    <span id=prob2>讀取失敗</span><br>
+    <div class="radiobuttons">
+        <div class="inputGroup">
+            <input type=radio class="option-input radio" name=pr1 onclick='reply=0;' id='cbox0'><span class="radioSpan" id=s0>0</span>
+        </div>
+        <div class="inputGroup">
+            <input type=radio class="option-input radio" name=pr1 onclick='reply=1;' id='cbox1'><span class="radioSpan" id=s1>1</span class="radioSpan"> 
+        </div>
+        <div class="inputGroup">
+            <input type=radio class="option-input radio" name=pr1 onclick='reply=2;' id='cbox2'><span class="radioSpan" id=s2>2</span class="radioSpan"> 
+        </div>
+        <div class="inputGroup">
+            <input type=radio class="option-input radio" name=pr1 onclick='reply=3;' id='cbox3'><span class="radioSpan" id=s3>3</span class="radioSpan"> 
+        </div>
+    </div><br>
+    <span class="buttoncontainer">
+    <button id="bu" class="cbutton" onclick="check();">Check</button></span>
+    <br>
+    <canvas id="pic" width="50" height="50">
+        This text is displayed if your browser does not support HTML5 Canvas.</canvas>
+    </div>
+
+    <hr>
+    <br>
+    <span class="timer">
+        得分：<span id=sc class="sc">0</span>分
+        &emsp;
+        剩餘秒數：<span id='ti' class='ti'>60</span>秒
+    </span>
+    
+    <script>
+        function drawCircle() {
+            canvasChart.fillStyle = "white";
+            canvasChart.fillRect(0, 0, 50, 50);
+            canvasChart.fillStyle = "#008866";
+            var circle1 = new Path2D();
+            canvasChart.beginPath();
+            circle1.arc(25, 25, 20, 0 * Math.PI, 2 * Math.PI);
+            canvasChart.fill(circle1);//畫第一個圓圈
+            canvasChart.fillStyle = "#FFFFFF";
+            var circle1 = new Path2D();
+            canvasChart.beginPath();
+            circle1.arc(25, 25, 13, 0 * Math.PI, 2 * Math.PI);
+            canvasChart.fill(circle1);//畫第二個圓圈
+        }
+
+        function drawCross() {
+            canvasChart.fillStyle = "white";
+            canvasChart.fillRect(0, 0, 50, 50);
+            canvasChart.fillStyle = "#A42D00";
+            canvasChart.beginPath();
+            canvasChart.moveTo(6, 12);
+            canvasChart.lineTo(12, 6);
+            canvasChart.lineTo(44, 38);
+            canvasChart.lineTo(38, 44);
+            canvasChart.fill();//畫X的\
+
+            canvasChart.beginPath();
+            canvasChart.moveTo(38, 6);
+            canvasChart.lineTo(44, 12);
+            canvasChart.lineTo(12, 44);
+            canvasChart.lineTo(6, 38);
+            canvasChart.fill();//畫X的/
+        }
+
+        var canvas1 = document.getElementById("pic");
+        var canvasChart = canvas1.getContext("2d");
+    </script>
+</body>
+
+</html>

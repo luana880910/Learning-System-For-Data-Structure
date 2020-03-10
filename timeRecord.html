@@ -1,0 +1,22 @@
+<html>
+
+<body>
+    <center><span id="time"></span>
+    <button onclick="reset();">重新計算-測試用按鈕</button></center>
+</body>
+<script>
+    var stayTime = localStorage.getItem("stayTime");
+    var timeRecord = stayTime.split("@");//array
+    var time = "<table  Border='1'><tr><td align='center' valign='center'>網頁時間紀錄</td></tr>" ;
+    for (let index = 1; index < timeRecord.length; index++) {
+        time += "<tr><td align='center' valign='center'>" + timeRecord[index] + " 秒</td></tr>";
+    }
+    time += "</table>";
+    document.getElementById('time').innerHTML = time;
+
+    function reset() {
+        localStorage.setItem("stayTime","網頁時間紀錄");
+    }
+</script>
+
+</html>

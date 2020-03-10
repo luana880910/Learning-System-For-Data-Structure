@@ -1,0 +1,142 @@
+.title{
+  font-weight: bold;
+  font-size: 30pt;
+}
+
+body {
+  font-family:"微軟正黑體";
+  
+}
+.textfield {
+  position: relative;
+  width: 10em;
+  display:inline-block;
+}
+
+input {
+  width: 10em;
+  height: 40px;
+  color: black;
+  font-size: inherit;
+  font-family: inherit;
+  background-color: rgb(168, 168, 168);
+  padding: 5px 5px;
+  border: 1px solid transparent;
+  transition: background-color 0.3s ease-in-out;
+  
+}
+
+input:focus {
+  outline: none;
+}
+
+input::placeholder {
+  color: hsla(0, 0%, 60%, 0.6);
+}
+
+.o {
+  position: absolute;
+  background-color: #000000;
+  transition: transform 0.1s ease;
+}
+
+.o.bottom,
+.o.top {
+  height: 1px;
+  left: 0;
+  right: 0;
+  transform: scaleX(0);
+}
+
+.o.left,
+.o.right {
+  width: 1px;
+  top: 0;
+  bottom: 0;
+  transform: scaleY(0);
+}
+
+.o.bottom {
+  bottom: 0;
+  transform-origin: bottom right;
+}
+
+input:focus ~ .bottom {
+  transform-origin: bottom left;
+  transform: scaleX(1);
+}
+
+.o.right {
+  right: 0;
+  transform-origin: top right;
+  transition-delay: 0.05s;
+}
+
+input:focus ~ .right {
+  transform-origin: bottom right;
+  transform: scaleY(1);
+}
+
+.o.top {
+  top: 0;
+  transform-origin: top left;
+  transition-delay: 0.15s;
+}
+
+input:focus ~ .top {
+  transform-origin: top right;
+  transform: scaleX(1);
+}
+
+.o.left {
+  left: 0;
+  transform-origin: bottom left;
+  transition-delay: 0.25s;
+}
+
+input:focus ~ .left {
+  transform-origin: top left;
+  transform: scaleY(1);
+}
+
+button {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  font-size: inherit;
+  font-family: inherit;
+}
+button.cbutton {
+  transition: all 0.5s cubic-bezier(0.65, -0.25, 0.25, 1.95);
+  font-weight: 20px;
+  color: #ffffff;
+  padding: 6px 5px 10px 5px;
+  background: rgb(0, 0, 0);
+  text-transform: uppercase;
+}
+button.cbutton:hover{
+  letter-spacing: 0.125rem;
+}
+
+.timer{
+  background-color: rgb(58, 58, 58);
+  color: rgb(255, 255, 255);
+  border:solid 3px #000000;
+  border-radius: 20px;
+  padding: 15px 15px;
+  position: absolute;
+  right: 5%;
+  top: 5px;
+}
+
+.ti{
+  color: red;
+}
+
+.sc{
+  color: red;
+}
