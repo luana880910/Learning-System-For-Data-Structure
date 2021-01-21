@@ -2,14 +2,14 @@
 
 Simulation-based learning system for basic programming concepts
 
-使用方法
+## 使用方法
 打開login.html，隨意輸入學號及密碼，即可使用本系統。
 
 分析
 
 -讓升上大二的同學能夠快速跟上資料結構課程的腳步，避免大一時沒釐清的觀念影響到大二的課程學習，將迴圈以及Array這兩個基本重要觀念，由淺入深的幫助同學複習。
 
-設計
+## 設計
 
 將教學內容分為四大類:
 
@@ -23,7 +23,7 @@ Simulation-based learning system for basic programming concepts
 
 希望題型有淺有深，目標分為三個階段:簡單、中等、難，使學習者不會挫敗，並且也不會虧待本身底子已經不錯的人。
 
-發展
+## 發展
 
 每類中分出模擬以及測驗。
 
