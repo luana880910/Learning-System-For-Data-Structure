@@ -1,4 +1,4 @@
-# Learning-System-For-Data-Structure
+# Simulation-based Learning System for Basic Programming Concepts
 
 Simulation-based learning system for basic programming concepts
 
