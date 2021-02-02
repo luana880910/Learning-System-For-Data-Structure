@@ -1,0 +1,41 @@
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    margin: 10px;
+}
+
+#canvas1 {
+    border: 5px blue solid;
+}
+
+#outer {
+    width: 200px;
+    height: 250px;
+    float: left;
+    margin-bottom: 10px;
+}
+
+#code {
+    float: left;
+    height: 280px;
+}
+
+#outer2 {
+    float: left;
+    height: 100%;
+}
+
+#showWord {
+    text-align: center;
+}
+
+#IntOut {
+    float: left;
+}
+
+#process {
+    float: left;
+}
